@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center" >
+
+    <TextView
+        android:id="@+id/account_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/account"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/account_tip"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/account_tip"
+        android:ems="11"
+        android:hint="@string/account_tip"
+        android:inputType="number"
+        android:maxEms="11"
+        android:maxLength="11"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/password_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/account_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/password"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/password_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_toRightOf="@+id/password_tip"
+        android:ems="8"
+        android:hint="@string/password_tip"
+        android:inputType="textPassword"
+        android:maxEms="8"
+        android:maxLength="8"
+        android:singleLine="true" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/re_password_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/password_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/re_password"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/re_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/re_password_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_toRightOf="@+id/re_password_tip"
+        android:ems="8"
+        android:hint="@string/must_input"
+        android:inputType="textPassword"
+        android:maxEms="8"
+        android:maxLength="8"
+        android:singleLine="true" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/qq_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/re_password_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/qq"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/qq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/qq_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_toRightOf="@+id/qq_tip"
+        android:ems="13"
+        android:hint="@string/must_input"
+        android:inputType="number"
+        android:maxEms="13"
+        android:maxLength="13"
+        android:singleLine="true" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/name_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/qq_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/name"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/name_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_toRightOf="@+id/name_tip"
+        android:ems="10"
+        android:hint="@string/must_input"
+        android:maxEms="10"
+        android:maxLength="10"
+        android:singleLine="true" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/idcard_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/name_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/id_card"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/idcard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/idcard_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_alignRight="@+id/re_get"
+        android:layout_toRightOf="@+id/idcard_tip"
+        android:ems="11"
+        android:hint="@string/must_input"
+        android:maxEms="18"
+        android:maxLength="18"
+        android:singleLine="true" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/id_entifying_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/account_tip"
+        android:layout_below="@+id/idcard_tip"
+        android:layout_marginTop="20dp"
+        android:text="@string/id_entifying"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/id_entifying"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/id_entifying_tip"
+        android:layout_alignLeft="@+id/account"
+        android:layout_toLeftOf="@+id/re_get"
+        android:layout_toRightOf="@+id/id_entifying_tip"
+        android:ems="8"
+        android:hint="@string/must_input"
+        android:maxEms="8"
+        android:maxLength="8"
+        android:singleLine="true" >
+    </EditText>
+
+    <Button
+        android:id="@+id/re_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/id_entifying_tip"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:text="@string/re_get" />
+
+    <Button
+        android:id="@+id/ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id_entifying_tip"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/ok" />
+
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ok"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+</RelativeLayout>
