@@ -38,6 +38,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 				handleNetErr(getString(R.string.err_net));
 				break;
 			default:
+				handleOtherMsg(msg);
 				break;
 			}
 		}
@@ -56,4 +57,5 @@ public abstract class BaseActivity extends ActionBarActivity {
 	public abstract void handleNetErr(String err);
 	public abstract void handleServerErr(String err);
 	public abstract void handleNomal(String msg);
+	public abstract void handleOtherMsg(Message msg);
 }

@@ -16,7 +16,7 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 
 public class HttpOperator {
-	public static String doGet(String Url) throws IOException {
+	public static String doGet(String Url) {
 		String strResult = null;
 		//创建httpRequest对象
 		HttpGet httpRequest = new HttpGet(Url);
@@ -42,12 +42,12 @@ public class HttpOperator {
 		return strResult;
 	}
 	
-	public static String doPost(String Url, List <NameValuePair> params) throws IOException {
+	public static String doPost(String Url, List <NameValuePair> params) {
 		String strResult = null;
 		//创建httpRequest对象
 		HttpPost httpRequest = new HttpPost(Url);
-		httpRequest.setEntity(new UrlEncodedFormEntity(params));
 		try {
+			httpRequest.setEntity(new UrlEncodedFormEntity(params));
 			//取得HttpClient对象
 			HttpClient httpclient = new DefaultHttpClient();
 			httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,2000);//连接时间

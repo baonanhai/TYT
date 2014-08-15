@@ -29,6 +29,10 @@
             android:name="com.tyt.view.RegisterActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.tyt.view.AllInfoActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>
