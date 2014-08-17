@@ -55,6 +55,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			String password = mSharedPreferences.getString(CommonDefine.PASSWORD, "");
 			mAccountInput.setText(account);
 			mPasswordInput.setText(password);
+			mIsSaveCheck.setChecked(true);
 		}
 	}
 

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+ <TextView
+        android:id="@+id/start_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/start"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/start_tip"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/start_tip"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/start_range_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/start"
+        android:layout_below="@+id/start_tip"
+        android:layout_marginTop="10dp"
+        android:text="@string/range" />
+
+    <Spinner
+        android:id="@+id/start_range"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/start_range_tip"
+        android:layout_below="@+id/start_tip"
+        android:layout_toLeftOf="@+id/start_range_kilometre"
+        android:layout_toRightOf="@+id/start_range_tip" />
+
+    <TextView
+        android:id="@+id/start_range_kilometre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/start_range_tip"
+        android:layout_alignRight="@+id/start"
+        android:layout_marginRight="20dp"
+        android:text="@string/kilometre" />
+
+    <TextView
+        android:id="@+id/end_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/start_range"
+        android:layout_marginTop="10dp"
+        android:text="@string/end"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/end_tip"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/end_tip"
+        android:ems="10" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/end_range_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/end"
+        android:layout_below="@+id/end_tip"
+        android:layout_marginTop="10dp"
+        android:text="@string/range" />
+
+    <Spinner
+        android:id="@+id/end_range"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/end_range_tip"
+        android:layout_below="@+id/end_tip"
+        android:layout_toLeftOf="@+id/end_range_kilometre"
+        android:layout_toRightOf="@+id/end_range_tip" />
+
+    <TextView
+        android:id="@+id/end_range_kilometre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/end_range_tip"
+        android:layout_alignRight="@+id/end"
+        android:layout_marginRight="20dp"
+        android:text="@string/kilometre" />
+
+    <Button
+        android:id="@+id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/end_range"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/search" />
+</RelativeLayout>

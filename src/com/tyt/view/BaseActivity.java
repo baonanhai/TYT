@@ -26,7 +26,11 @@ public abstract class BaseActivity extends ActionBarActivity {
 					JSONObject msgJson = new JSONObject((String)msg.obj);
 					int code = msgJson.getInt(JsonTag.CODE);
 					if (code == CommonDefine.ERR_SERVER_NONE) {
-						handleNomal(msgJson.getString(JsonTag.DATA));
+						if (msgJson.has(JsonTag.DATA)) {
+							handleNomal(msgJson.getString(JsonTag.DATA));
+						} else {
+							handleNomal(msgJson.getString(JsonTag.MSG));
+						}
 					} else if (code == CommonDefine.ERR_SERVER) {
 						handleServerErr(msgJson.getString(JsonTag.MSG));
 					}

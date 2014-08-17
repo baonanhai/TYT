@@ -35,5 +35,17 @@
     <string name="err_login_account_not_actived">账号未激活</string>
     <string name="err_verifycode_get_ok">验证码发送成功</string>
     <string name="err_verifycode_get_fail">验证码发送失败</string>
+    <string name="keep">收藏</string>
+    <string name="release">发布</string>
+    <string name="my_release">我的发布</string>
+    <string name="search">搜索</string>
+    <string name="car1">一号车</string>
+    <string name="car2">二号车</string>
+    <string name="car3">三号车</string>
+    <string name="car4">四号车</string>
+    <string name="start">出发地:</string>
+    <string name="end">目的地:</string>
+    <string name="range">范围:</string>
+    <string name="kilometre">公里</string>
 
 </resources>

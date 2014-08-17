@@ -82,17 +82,18 @@ public class HttpHandler {
 	}
 	
 	public void register(String phone, String password, String qq, String name, String idcard) {
+		Log.i("sssss", "phone:" + phone + " password:" + password + " qq:" + qq + " name:" + name
+				+ " idcard:" + idcard);
 		initToken(phone);
 		List <NameValuePair> params = new ArrayList<NameValuePair>();  
 		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, phone)); 
 		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password)); 
 		params.add(new BasicNameValuePair(JsonTag.USER_NAME, phone)); 
 		params.add(new BasicNameValuePair(JsonTag.USERSIGN, CommonDefine.USERSIGN)); 
-		params.add(new BasicNameValuePair(JsonTag.PCSIGN, CommonDefine.PCSIGN)); 
+		params.add(new BasicNameValuePair(JsonTag.PCSIGN, CommonUtil.MD5(phone))); 
 		params.add(new BasicNameValuePair(JsonTag.QQ, qq)); 
 		params.add(new BasicNameValuePair(JsonTag.TRUE_NAME, name)); 
 		params.add(new BasicNameValuePair(JsonTag.ID_CARD, idcard)); 
-		params.add(new BasicNameValuePair(JsonTag.VERSION, CommonDefine.VERSION)); 
 		params.add(new BasicNameValuePair(JsonTag.TOKEN, mToken)); 
 		String response = HttpOperator.doPost(CommonDefine.URL_REGISTER, params);
 		Log.i("sssss", response);
