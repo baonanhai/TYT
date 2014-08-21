@@ -39,6 +39,7 @@
     <string name="release">发布</string>
     <string name="my_release">我的发布</string>
     <string name="search">搜索</string>
+    <string name="has_end">设置目的地</string>
     <string name="car1">一号车</string>
     <string name="car2">二号车</string>
     <string name="car3">三号车</string>
@@ -47,5 +48,9 @@
     <string name="end">目的地:</string>
     <string name="range">范围:</string>
     <string name="kilometre">公里</string>
+    <string name="pro">省</string>
+    <string name="city">市</string>
+    <string name="county">县</string>
+    <string name="search_no_city">搜索必须指定到市</string>
 
 </resources>

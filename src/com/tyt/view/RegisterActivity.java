@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.dxj.tyt.R;
 import com.tyt.common.CommonDefine;
-import com.tyt.net.HttpHandler;
+import com.tyt.net.HttpManager;
 
 public class RegisterActivity extends BaseActivity implements OnClickListener, TextWatcher{
 	public static final String FLAG_PHONE = "phone";
@@ -184,7 +184,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener, T
 
 		@Override
 		public void run() {
-			HttpHandler httpHandler = HttpHandler.getInstance(mHandler);
+			HttpManager httpHandler = HttpManager.getInstance(mHandler);
 			httpHandler.getVerifyCode(mSmsMob, mSmsText);
 		}
 	}
@@ -206,7 +206,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener, T
 
 		@Override
 		public void run() {
-			HttpHandler httpHandler = HttpHandler.getInstance(mHandler);
+			HttpManager httpHandler = HttpManager.getInstance(mHandler);
 			httpHandler.register(mPhone, mPassword, mQq, mName, mIdcard);
 		}
 	}

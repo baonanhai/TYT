@@ -28,7 +28,9 @@ public class CommonDefine {
 	public static final String URL_QUERY = URL_BASE + "transport/query";
 	public static final String URL_REGISTER = URL_BASE + "user/save";
 
+	public static final int DELAY_FOR_GET_DELAY = 15 * 1000;
 	public static final String VERSION = "2000";
+	public static final String PLAT_ID = "2";
 	public static final String PRIVATEKEY = "1345~opo-4%";
 	public static final String USERSIGN = "2";   //用户身份标识 0 车主(注册不通过，服务器端问题) 1配货站 2货主 3 销售 4 管理员
 	

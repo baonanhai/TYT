@@ -1,107 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    
- <TextView
-        android:id="@+id/start_tip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/start"
-        android:textSize="18sp" />
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
 
-    <EditText
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/start_tip"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/start_tip"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/start_range_tip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/start"
-        android:layout_below="@+id/start_tip"
-        android:layout_marginTop="10dp"
-        android:text="@string/range" />
-
-    <Spinner
-        android:id="@+id/start_range"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/start_range_tip"
-        android:layout_below="@+id/start_tip"
-        android:layout_toLeftOf="@+id/start_range_kilometre"
-        android:layout_toRightOf="@+id/start_range_tip" />
+        android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/start_range_kilometre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/start_range_tip"
-        android:layout_alignRight="@+id/start"
-        android:layout_marginRight="20dp"
-        android:text="@string/kilometre" />
+        <TextView
+            android:id="@+id/start_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/start"
+            android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/end_tip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/start_range"
-        android:layout_marginTop="10dp"
-        android:text="@string/end"
-        android:textSize="18sp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/end_tip"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/end_tip"
-        android:ems="10" >
-    </EditText>
+            <LinearLayout
+                android:id="@+id/start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/end_range_tip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/end"
-        android:layout_below="@+id/end_tip"
-        android:layout_marginTop="10dp"
-        android:text="@string/range" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pro" />
 
-    <Spinner
-        android:id="@+id/end_range"
+                <Spinner
+                    android:id="@+id/start_pro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/city" />
+
+                <Spinner
+                    android:id="@+id/start_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/start_range_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/county" />
+
+                <Spinner
+                    android:id="@+id/start_county"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:gravity="center"
+                    android:text="@string/range" />
+
+                <Spinner
+                    android:id="@+id/start_range"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/kilometre" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/end_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/end_range_tip"
-        android:layout_below="@+id/end_tip"
-        android:layout_toLeftOf="@+id/end_range_kilometre"
-        android:layout_toRightOf="@+id/end_range_tip" />
+        android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/end_range_kilometre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/end_range_tip"
-        android:layout_alignRight="@+id/end"
-        android:layout_marginRight="20dp"
-        android:text="@string/kilometre" />
+        <TextView
+            android:id="@+id/end_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/end"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pro" />
+
+                <Spinner
+                    android:id="@+id/end_pro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/city" />
+
+                <Spinner
+                    android:id="@+id/end_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/end_range_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/county" />
+
+                <Spinner
+                    android:id="@+id/end_county"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:gravity="center"
+                    android:text="@string/range" />
+
+                <Spinner
+                    android:id="@+id/end_range"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/kilometre" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/end_range"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:text="@string/search" />
-</RelativeLayout>
+
+</LinearLayout>

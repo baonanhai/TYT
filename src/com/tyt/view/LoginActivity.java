@@ -18,8 +18,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.dxj.tyt.R;
+import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
-import com.tyt.net.HttpHandler;
+import com.tyt.net.HttpManager;
 
 public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickListener, OnCheckedChangeListener{
 	private EditText mAccountInput;
@@ -98,7 +99,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 				mErrTip.setText(R.string.err_password_length);
 				return;
 			}
-			HttpHandler httpHandler = HttpHandler.getInstance(mHandler);
+			HttpManager httpHandler = HttpManager.getInstance(mHandler);
 			httpHandler.login(account, password);
 		}
 	}
@@ -119,6 +120,10 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			editor.putString(CommonDefine.PASSWORD, password);
 			editor.commit();
 		}
+
+		Intent serviceIntent = new Intent(this, TytService.class);
+		startService(serviceIntent);
+
 		Intent allIntent = new Intent(this, AllInfoActivity.class);
 		startActivity(allIntent);
 	}
