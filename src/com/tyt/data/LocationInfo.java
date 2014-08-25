@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 public class LocationInfo {
 	private static final int TYPE_PRO = 0;
@@ -89,7 +88,7 @@ public class LocationInfo {
 		if (mLocationType != TYPE_PRO) {
 			LocationManager.getInstance(context).addLocationInfo(this);
 		}
-		
+
 		mParent = parent;
 	}
 

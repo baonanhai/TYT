@@ -52,5 +52,17 @@
     <string name="city">市</string>
     <string name="county">县</string>
     <string name="search_no_city">搜索必须指定到市</string>
-
+    <string name="hide">隐藏</string>
+    <string name="content">内容</string>
+    <string name="time">时间</string>
+    <string name="refresh">刷新</string>
+    <string name="auto_refresh_open">自动刷新已开</string>
+    <string name="auto_refresh_stop">自动刷新已关</string>
+    <string name="re_search">重新搜索</string>
+    <string name="search_condition">搜索条件:</string>
+    <string name="info">信息:</string>
+    <string name="phone">电话:</string>
+    <string name="tip_time">时间:</string>
+    <string name="tip_qq">QQ:</string>
+    <string name="map">地图</string>
 </resources>

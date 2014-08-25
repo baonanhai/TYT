@@ -44,7 +44,7 @@ public class TytService extends Service {
 		//初始化地址数据
 		LocationManager.getInstance(getApplicationContext()).initLocationInfo();
 
-		mOrderManager = new OrderManager(getApplicationContext());
+		mOrderManager = OrderManager.getInstance(getApplicationContext());
 
 		TYTApplication application = (TYTApplication)getApplication();
 		application.doInThread(new RefreshData());

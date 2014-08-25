@@ -7,25 +7,24 @@
         android:id="@+id/search_condition_tip"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView" />
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="@string/refresh" />
 
     <Button
         android:id="@+id/auto_refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="@string/auto_refresh_open" />
 
     <Button
         android:id="@+id/search_change"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="@string/re_search" />
 
 </LinearLayout>

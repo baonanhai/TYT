@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 public class LocationManager {
 	private static LocationManager mLocationHandler;
@@ -89,9 +88,44 @@ public class LocationManager {
 		}
 		mAllLocationInfos.add(info);
 	}
+
+	public static List<String> getAllUsefullLocation(ArrayList<String> result, String pro, String city, String county) {
+		StringBuilder sb = new StringBuilder();
+		if (pro.endsWith("省")) {
+			sb.append(pro.substring(0, pro.length() - 1));
+		} else if (pro.endsWith("自治区")){
+			sb.append(pro.substring(0, pro.length() - 3));
+		}
+
+		if (city.endsWith("市")) {
+			String cityTemp = city.substring(0, city.length() - 1);
+			if (!hasIn(result, cityTemp)) {
+				result.add(cityTemp);
+			}
+			sb.append(cityTemp);
+		}
+
+		String countyTemp = null;
+		if (county != null && (county.endsWith("县") || county.endsWith("区"))) {
+			countyTemp = county.substring(0, county.length() - 1);
+			if (!hasIn(result, countyTemp)) {
+				result.add(countyTemp);
+			}
+		}
+		if (!hasIn(result, sb.toString())) {
+			result.add(sb.toString());
+		}
+		return result;
+	}
 	
-	public static List<String> getAllUsefullLocation(String pro, String city, String county) {
-		Log.i("sssss", "pro:" + pro + " city:" + city + " county:" + county);
-		return null;
+	public static boolean hasIn(List<String> array, String content) {
+		boolean hasIn = false;
+		for (String info : array) {
+			if (content.equals(info)) {
+				hasIn = true;
+				break;
+			}
+		}
+		return hasIn;
 	}
 }

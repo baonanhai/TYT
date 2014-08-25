@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +24,13 @@ import android.widget.Toast;
 import com.dxj.tyt.R;
 import com.tyt.data.LocationInfo;
 import com.tyt.data.LocationManager;
+import com.tyt.data.OrderInfo;
+import com.tyt.data.OrderManager;
+import com.tyt.data.SearchObserver;
 import com.tyt.data.SelectLocation;
 
-public class CarFragment extends Fragment implements OnItemSelectedListener, OnClickListener {
+public class CarFragment extends Fragment implements OnItemSelectedListener, OnClickListener,
+SearchObserver, OnItemClickListener {
 	private boolean mIsSearch = false;
 	private Spinner mStartPro;
 	private Spinner mStartCity;
@@ -53,16 +61,28 @@ public class CarFragment extends Fragment implements OnItemSelectedListener, OnC
 
 	private View mSearchConditionView;
 	private View mSearchInfoView;
-
 	private View mSearchShow;
+	private ListView mResultShow;
+	private LayoutInflater mInflater;
+	private SearchAdapter mSearchAdapter;
+	private OrderManager mOrderManager;
+	private String mCondition;
+	private ArrayList<String> mSearchKey;
+	private ArrayList<String> mSearchEndKey;
+	private boolean mIsAutoRefresh = true;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		mInflater = inflater;
 		View searchCarLayout = inflater.inflate(R.layout.search_content, container, false);
 		mSearchHeader = (ViewGroup)searchCarLayout.findViewById(R.id.search_header);
 		mSearchConditionView = inflater.inflate(R.layout.search_start_header, mSearchHeader, false);
 		mSearchInfoView = inflater.inflate(R.layout.search_end_header, mSearchHeader, false);
 		mSearchShow = searchCarLayout.findViewById(R.id.search_show);
+		mResultShow = (ListView)searchCarLayout.findViewById(R.id.result_list);
+		mResultShow.setOnItemClickListener(this);
+
+		mOrderManager = OrderManager.getInstance(getActivity().getApplicationContext());
 		if (!mIsSearch) {
 			initSearchConditionView();
 		} else {
@@ -112,9 +132,18 @@ public class CarFragment extends Fragment implements OnItemSelectedListener, OnC
 		mSearchShow.setVisibility(View.VISIBLE);
 		mSearchHeader.addView(mSearchInfoView);
 		mConditionTip = (TextView)mSearchInfoView.findViewById(R.id.search_condition_tip);
+		mCondition = mStart.toString();
+		if (mEnd != null) {
+			mCondition = mCondition + mEnd.toString();
+		}
+		mConditionTip.setText(mCondition);
+
 		mRefresh = (Button)mSearchInfoView.findViewById(R.id.refresh);
+		mRefresh.setOnClickListener(this);
 		mAutoRefresh = (Button)mSearchInfoView.findViewById(R.id.auto_refresh);
+		mAutoRefresh.setOnClickListener(this);
 		mSearchChange = (Button)mSearchInfoView.findViewById(R.id.search_change);
+		mSearchChange.setOnClickListener(this);
 	}
 
 	@Override
@@ -125,7 +154,7 @@ public class CarFragment extends Fragment implements OnItemSelectedListener, OnC
 				mStart = null;
 				setSpinnerData(null, mStartCity);
 			} else {
-				mStart = new SelectLocation();
+				mStart = new SelectLocation(getActivity().getApplicationContext());
 				mStart.setPro(mAllLocationInfos.get(position - 1));
 
 				mStartCityInfo = mAllLocationInfos.get(position - 1).getChildInfos();
@@ -158,7 +187,7 @@ public class CarFragment extends Fragment implements OnItemSelectedListener, OnC
 				mEnd = null;
 				setSpinnerData(null, mEndCity);
 			} else {
-				mEnd = new SelectLocation();
+				mEnd = new SelectLocation(getActivity().getApplicationContext());
 				mEnd.setPro(mAllLocationInfos.get(position - 1));
 				mEndCityInfo = mAllLocationInfos.get(position - 1).getChildInfos();
 				setSpinnerData(mEndCityInfo, mEndCity);
@@ -227,33 +256,152 @@ public class CarFragment extends Fragment implements OnItemSelectedListener, OnC
 					} else {
 						mStart.setRange(mStartRangeValue);
 						List<LocationInfo> needSearchLocation = mLocationManager.getAllLocationInRange(mStart);
-						List<String> searchKey = new ArrayList<String>();
+						mSearchKey = new ArrayList<String>();
 						List<String> temp;
 						for (LocationInfo locationInfo : needSearchLocation) {
 							if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
-								temp = LocationManager.getAllUsefullLocation(locationInfo.getParent().getName(), locationInfo.getName(), null);
-								if (temp != null) {
-									searchKey.addAll(temp);
-								}
+								temp = LocationManager.getAllUsefullLocation(mSearchKey, locationInfo.getParent().getName(), locationInfo.getName(), null);
 							} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
 								LocationInfo county = locationInfo;
 								LocationInfo city = locationInfo.getParent();
 								LocationInfo pro = city.getParent();
-								temp = LocationManager.getAllUsefullLocation(pro.getName(), city.getName(), county.getName());
-								if (temp != null) {
-									searchKey.addAll(temp);
-								}
+								temp = LocationManager.getAllUsefullLocation(mSearchKey, pro.getName(), city.getName(), county.getName());
 							}
 						}
-						mIsSearch = true;
-						mSearchHeader.removeAllViews();
-						initSearchInfoView();
+
+						if (mEnd != null) {
+							if (mEnd.getCity() == null) {
+								Toast.makeText(getActivity(), R.string.search_no_city, Toast.LENGTH_LONG).show();
+							} else {
+								mEnd.setRange(mEndRangeValue);
+								List<LocationInfo> needSearchEndLocation = mLocationManager.getAllLocationInRange(mEnd);
+								mSearchEndKey = new ArrayList<String>();
+								List<String> endTemp;
+								for (LocationInfo locationInfo : needSearchEndLocation) {
+									if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
+										endTemp = LocationManager.getAllUsefullLocation(mSearchEndKey, locationInfo.getParent().getName(), locationInfo.getName(), null);
+									} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
+										LocationInfo county = locationInfo;
+										LocationInfo city = locationInfo.getParent();
+										LocationInfo pro = city.getParent();
+										endTemp = LocationManager.getAllUsefullLocation(mSearchEndKey, pro.getName(), city.getName(), county.getName());
+									}
+								}
+								showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
+							}
+						} else {
+							showResult(mOrderManager.search(mSearchKey, null));
+						}
 					}
 				}
 			}
 			break;
+		case R.id.refresh:
+			showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
+			break;
+		case R.id.auto_refresh:
+			if (mIsAutoRefresh) {
+				mIsAutoRefresh = false;
+				mAutoRefresh.setText(getString(R.string.auto_refresh_stop));
+				mOrderManager.removeSearchObserver(this);
+			} else {
+				mIsAutoRefresh = true;
+				mAutoRefresh.setText(getString(R.string.auto_refresh_open));
+				mOrderManager.addSearchObserver(this);
+			}
+			break;
+		case R.id.search_change:
+			mIsSearch = false;
+			mIsAutoRefresh = true;
+			mOrderManager.removeSearchObserver(this);
+			mSearchHeader.removeAllViews();
+			initSearchConditionView();
+			break;
 		default:
 			break;
 		}
+	}
+
+	private void showResult(List<OrderInfo> info) {
+		if(mSearchAdapter == null) {
+			mSearchAdapter = new SearchAdapter(info);
+		} else {
+			mSearchAdapter.setSearchResult(info);
+		}
+		mResultShow.setAdapter(mSearchAdapter);
+		mIsSearch = true;
+		mSearchHeader.removeAllViews();
+		initSearchInfoView();
+	}
+
+	class SearchAdapter extends BaseAdapter {
+		private List<OrderInfo> mSearchResult;
+
+		public void setSearchResult(List<OrderInfo> searchResult) {
+			mSearchResult = searchResult;
+			notifyDataSetChanged();
+		}
+		
+		public List<OrderInfo> getSearchResult() {
+			return mSearchResult;
+		}
+
+		public SearchAdapter(List<OrderInfo> searchResult) {
+			mSearchResult = searchResult;
+		}
+
+		@Override
+		public int getCount() {
+			return mSearchResult.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ItemTag tag = null;
+			if (convertView == null) {
+				tag = new ItemTag();  
+				convertView = mInflater.inflate(R.layout.search_item, null);
+				tag.isHide = (TextView)convertView.findViewById(R.id.hide);
+				tag.mContent = (TextView)convertView.findViewById(R.id.content);
+				tag.mTime = (TextView)convertView.findViewById(R.id.time);
+				convertView.setTag(tag);
+			} else {
+				tag = (ItemTag)convertView.getTag();
+			}
+
+			//tag.isHide.setText();
+			tag.mContent.setText(mSearchResult.get(position).getTaskContent());
+			tag.mTime.setText(mSearchResult.get(position).getPubTime());
+			return convertView;
+		}
+	}
+
+	class ItemTag {
+		private TextView isHide;
+		private TextView mContent;
+		private TextView mTime;
+	}
+
+	@Override
+	public void onDataChange() {
+		showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent intent = new Intent(getActivity(), DetailActivity.class);
+		intent.putExtra(DetailActivity.ORDER_INFO, mSearchAdapter.getSearchResult().get(position));
+		intent.putExtra(DetailActivity.SEARCH_CONDITION, mCondition);
+		startActivity(intent);
 	}
 }

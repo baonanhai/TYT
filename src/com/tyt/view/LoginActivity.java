@@ -1,5 +1,8 @@
 package com.tyt.view;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 import com.dxj.tyt.R;
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
+import com.tyt.common.JsonTag;
 import com.tyt.net.HttpManager;
 
 public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickListener, OnCheckedChangeListener{
@@ -118,6 +122,13 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			Editor editor = mSharedPreferences.edit();
 			editor.putString(CommonDefine.ACCOUNT, account);
 			editor.putString(CommonDefine.PASSWORD, password);
+			try {
+				JSONObject response = new JSONObject(msg);
+				editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
+				editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			editor.commit();
 		}
 

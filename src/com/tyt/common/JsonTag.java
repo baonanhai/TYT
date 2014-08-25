@@ -17,4 +17,22 @@ public class JsonTag {
 	public static final String CODE = "code";
 	public static final String MSG = "msg";
 	public static final String DATA = "data";
+	
+	public static final String PUB_TIME = "pubTime";
+	public static final String PUB_QQ = "pubQQ";
+	public static final String STATUS = "status";
+	public static final String TEL = "tel";
+	public static final String TIME = "mtime";
+	public static final String RESEND = "resend";
+	public static final String UPLOAD_CELL_PHONE = "uploadCellPhone";
+	public static final String TASK_CONTENT = "taskContent";
+	public static final String CTIME = "ctime";
+	public static final String ID = "id";
+	public static final String SOURCE = "source";
+	public static final String NICKNAME = "nickName";
+	public static final String DESTPOINT = "destPoint";
+	public static final String STARTPOINT = "startPoint";
+	public static final String SERVE_DAYS = "serveDays";
+	public static final String TICKET = "ticket";
+	
 }
