@@ -67,6 +67,7 @@ public class HttpManager {
 	public void getAllInfo(int maxId) {
 		List <NameValuePair> params = initRequest("" + maxId);
 		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + maxId)); 
+		params.add(new BasicNameValuePair(JsonTag.SIZE, "" + 1000)); 
 		String response = HttpOperator.doPost(CommonDefine.URL_QUERY, params);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();

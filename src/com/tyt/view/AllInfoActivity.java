@@ -68,10 +68,10 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			transaction.hide(mMyReleaseFragment);
 		}
 		
-		mSearch.setClickable(true);
-		mRelease.setClickable(true);
-		mKeep.setClickable(true);
-		mMyRelease.setClickable(true);
+		mSearch.setEnabled(true);
+		mRelease.setEnabled(true);
+		mKeep.setEnabled(true);
+		mMyRelease.setEnabled(true);
 
 		switch (mState) {
 		case R.id.search:
@@ -81,7 +81,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			} else {  
 				transaction.show(mSearchFragment);  
 			}  
-			mSearch.setClickable(false);
+			mSearch.setEnabled(false);
 			break;
 		case R.id.release:
 			if (mReleaseFragment == null) {  
@@ -90,7 +90,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			} else {  
 				transaction.show(mReleaseFragment);  
 			}  
-			mRelease.setClickable(false);
+			mRelease.setEnabled(false);
 			break;
 		case R.id.keep:
 			if (mKeepFragment == null) {  
@@ -99,7 +99,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			} else {  
 				transaction.show(mKeepFragment);  
 			}  
-			mKeep.setClickable(false);
+			mKeep.setEnabled(false);
 			break;
 		case R.id.my_release:
 			if (mMyReleaseFragment == null) {  
@@ -108,7 +108,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			} else {  
 				transaction.show(mMyReleaseFragment);  
 			}  
-			mMyRelease.setClickable(false);
+			mMyRelease.setEnabled(false);
 			break;
 		}
 		transaction.commit();

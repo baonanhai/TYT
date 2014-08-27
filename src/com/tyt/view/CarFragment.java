@@ -1,11 +1,15 @@
 package com.tyt.view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -70,9 +74,12 @@ SearchObserver, OnItemClickListener {
 	private ArrayList<String> mSearchKey;
 	private ArrayList<String> mSearchEndKey;
 	private boolean mIsAutoRefresh = true;
+	private DateFormat mDateFormat;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		mDateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT);
+		
 		mInflater = inflater;
 		View searchCarLayout = inflater.inflate(R.layout.search_content, container, false);
 		mSearchHeader = (ViewGroup)searchCarLayout.findViewById(R.id.search_header);
@@ -288,9 +295,11 @@ SearchObserver, OnItemClickListener {
 									}
 								}
 								showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
+								mOrderManager.addSearchObserver(this);
 							}
 						} else {
 							showResult(mOrderManager.search(mSearchKey, null));
+							mOrderManager.addSearchObserver(this);
 						}
 					}
 				}
@@ -341,7 +350,7 @@ SearchObserver, OnItemClickListener {
 			mSearchResult = searchResult;
 			notifyDataSetChanged();
 		}
-		
+
 		public List<OrderInfo> getSearchResult() {
 			return mSearchResult;
 		}
@@ -379,9 +388,19 @@ SearchObserver, OnItemClickListener {
 				tag = (ItemTag)convertView.getTag();
 			}
 
-			//tag.isHide.setText();
+			tag.isHide.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					int position = (int) v.getTag();
+					mOrderManager.addBlackOrder(mSearchResult.get(position));
+				}
+			});
+			tag.isHide.setTag(position);
 			tag.mContent.setText(mSearchResult.get(position).getTaskContent());
-			tag.mTime.setText(mSearchResult.get(position).getPubTime());
+			long c = mSearchResult.get(position).getCtime();
+			String cTime= mDateFormat.format(new Date(c));
+			tag.mTime.setText(cTime);
 			return convertView;
 		}
 	}
@@ -400,7 +419,7 @@ SearchObserver, OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent intent = new Intent(getActivity(), DetailActivity.class);
-		intent.putExtra(DetailActivity.ORDER_INFO, mSearchAdapter.getSearchResult().get(position));
+		intent.putExtra(DetailActivity.ORDER_ID, mSearchAdapter.getSearchResult().get(position).getId());
 		intent.putExtra(DetailActivity.SEARCH_CONDITION, mCondition);
 		startActivity(intent);
 	}

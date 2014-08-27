@@ -31,6 +31,7 @@ public class SearchFragment extends Fragment implements OnClickListener {
 		View searchLayout = inflater.inflate(R.layout.search, container, false); 
 		mCar1 = (Button)searchLayout.findViewById(R.id.car1);
 		mCar1.setOnClickListener(this);
+		mCar1.setEnabled(false);
 		mCar2 = (Button)searchLayout.findViewById(R.id.car2);
 		mCar2.setOnClickListener(this);
 		mCar3 = (Button)searchLayout.findViewById(R.id.car3);
@@ -68,6 +69,12 @@ public class SearchFragment extends Fragment implements OnClickListener {
 		if (mCar4Fragment != null) {
 			transaction.hide(mCar4Fragment);
 		}
+		
+		mCar1.setEnabled(true);
+		mCar2.setEnabled(true);
+		mCar3.setEnabled(true);
+		mCar4.setEnabled(true);
+		
 		switch (mState) {
 		case R.id.car1:
 			if (mCar1Fragment == null) {
@@ -76,6 +83,7 @@ public class SearchFragment extends Fragment implements OnClickListener {
 			} else {
 				transaction.show(mCar1Fragment);
 			}
+			mCar1.setEnabled(false);
 			break;
 		case R.id.car2:
 			if (mCar2Fragment == null) {
@@ -84,6 +92,7 @@ public class SearchFragment extends Fragment implements OnClickListener {
 			} else {
 				transaction.show(mCar2Fragment);
 			}
+			mCar2.setEnabled(false);
 			break;
 		case R.id.car3:
 			if (mCar3Fragment == null) {
@@ -92,6 +101,7 @@ public class SearchFragment extends Fragment implements OnClickListener {
 			} else {
 				transaction.show(mCar3Fragment);
 			}
+			mCar3.setEnabled(false);
 			break;
 		case R.id.car4:
 			if (mCar4Fragment == null) {
@@ -100,6 +110,7 @@ public class SearchFragment extends Fragment implements OnClickListener {
 			} else {
 				transaction.show(mCar4Fragment);
 			}
+			mCar4.setEnabled(false);
 			break;
 		}
 		transaction.commit();

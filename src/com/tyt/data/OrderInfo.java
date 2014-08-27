@@ -17,13 +17,12 @@ public class OrderInfo implements Serializable{
 	private String resend;
 	private String uploadCellPhone;
 	private String taskContent;
-	private String ctime;
+	private long ctime;
 	private int id;
 	private String source;
 	private String nickName;
 	private String destPoint;
 	private String startPoint;
-	private boolean isKeep = false;
 
 	public OrderInfo(JSONObject order) {
 		try {
@@ -35,7 +34,7 @@ public class OrderInfo implements Serializable{
 			resend =  order.getString(JsonTag.RESEND);
 			uploadCellPhone =  order.getString(JsonTag.UPLOAD_CELL_PHONE);
 			taskContent =  order.getString(JsonTag.TASK_CONTENT);
-			ctime =  order.getString(JsonTag.CTIME);
+			ctime =  order.getLong(JsonTag.CTIME);
 			id =  order.getInt(JsonTag.ID);
 			source =  order.getString(JsonTag.SOURCE);
 			nickName =  order.getString(JsonTag.NICKNAME);
@@ -78,7 +77,7 @@ public class OrderInfo implements Serializable{
 		return taskContent;
 	}
 
-	public String getCtime() {
+	public long getCtime() {
 		return ctime;
 	}
 
@@ -100,14 +99,6 @@ public class OrderInfo implements Serializable{
 
 	public String getStartPoint() {
 		return startPoint;
-	}
-
-	public boolean isKeep() {
-		return isKeep;
-	}
-
-	public void setKeep(boolean isKeep) {
-		this.isKeep = isKeep;
 	}
 
 	@Override

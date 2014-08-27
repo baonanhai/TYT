@@ -8,15 +8,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
@@ -25,16 +28,23 @@ public class OrderManager {
 	private List<SearchObserver> mSearchObservers;
 	private Context mContext;
 	private List<OrderInfo> mAllOrders;
-
+	private List<OrderInfo> mAllKeepOrders;
+	private Set<String> mBlackOrder;
 	private static OrderManager mOrderManager;
-	private SharedPreferences mSharedPreferences;
 
 	private OrderManager(Context context) {
 		mContext = context;
-		mSharedPreferences = mContext.getSharedPreferences(CommonDefine.SETTING, Context.MODE_PRIVATE);
-		
+
 		if (!getBackInfo()) {
 			mAllOrders = new ArrayList<OrderInfo>();
+		}
+
+		if (!getKeepBackInfo()) {
+			mAllKeepOrders = new ArrayList<OrderInfo>();
+		}
+
+		if (!getBlackInfo()) {
+			mBlackOrder = new HashSet<String>();
 		}
 	}
 
@@ -49,7 +59,9 @@ public class OrderManager {
 		if (mSearchObservers == null) {
 			mSearchObservers = new ArrayList<SearchObserver>();
 		}
-		mSearchObservers.add(searchObserver);
+		if (!mSearchObservers.contains(searchObserver)) {
+			mSearchObservers.add(searchObserver);
+		}
 	}
 
 	public void removeSearchObserver(SearchObserver searchObserver) {
@@ -58,7 +70,8 @@ public class OrderManager {
 		}
 	}
 
-	public void addOrderInfo(String response) {
+	public int addOrderInfo(String response) {
+		int maxId = 1;
 		JSONArray allInfo;
 		try {
 			boolean isDataChange = false;
@@ -78,21 +91,24 @@ public class OrderManager {
 				if (!hasIn) {
 					isDataChange = true;
 					mAllOrders.add(temp);
+					if (temp.getId() > maxId) {
+						maxId = temp.getId();
+					}
 				}
 			}
 
 			if (isDataChange) {
-				saveInfo();
+				saveInfo(CommonDefine.ORDER_SAVE, mAllOrders);
+				if (mSearchObservers != null) {
+					for (SearchObserver searchObserver : mSearchObservers) {
+						searchObserver.onDataChange();
+					}
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
-		if (mSearchObservers != null) {
-			for (SearchObserver searchObserver : mSearchObservers) {
-				searchObserver.onDataChange();
-			}
-		}
+		return maxId;
 	}
 
 	public List<OrderInfo> search(List<String> startSearchKey, List<String> endSearchKey) {
@@ -114,23 +130,97 @@ public class OrderManager {
 					}
 				}
 			}
-			return endResult;
+			return checkBlack(endResult);
 		} else {
-			return startResult;
+			return checkBlack(startResult);
 		}
 	}
 
-	public void saveInfo() {
+	private List<OrderInfo> checkBlack(List<OrderInfo> OrdersInfo) {
+		List<OrderInfo> result = new ArrayList<OrderInfo>();
+		for (OrderInfo info : OrdersInfo) {
+			StringBuilder sb = new StringBuilder();
+			String content = info.getTaskContent();
+			if (content.startsWith("[") ) {
+				sb.append(content.substring(content.indexOf(".") + 1));
+			}
+			sb.append(info.getPubQQ());
+			sb.append(info.getTel());
+			if (!mBlackOrder.contains(sb.toString())) {
+				result.add(info);
+			}
+		}
+
+		Collections.sort(result, new Comparator<OrderInfo>(){
+
+			@Override
+			public int compare(OrderInfo lhs, OrderInfo rhs) {
+				return -(int)(lhs.getCtime() - rhs.getCtime());
+			}
+		});
+		return result;
+	}
+
+	public List<OrderInfo> getAllOrder() {
+		return mAllOrders;
+	}
+
+	public OrderInfo getOrder(int orderId) {
+		OrderInfo result = null;
+		for (OrderInfo info : mAllOrders) {
+			if (info.getId() == orderId) {
+				result = info;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public boolean isKeep(int orderId) {
+		for (OrderInfo info : mAllKeepOrders) {
+			if (info.getId() == orderId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void keep(OrderInfo info) {
+		if (!mAllKeepOrders.contains(info)) {
+			mAllKeepOrders.add(info);
+			saveInfo(CommonDefine.KEEP_ORDER_SAVE, mAllKeepOrders);
+		}
+	}
+
+	public List<OrderInfo> getAllKeepOrder() {
+		return mAllKeepOrders;
+	}
+
+	public void addBlackOrder(OrderInfo info) {
+		StringBuilder sb = new StringBuilder();
+		String content = info.getTaskContent();
+		if (content.startsWith("[") ) {
+			sb.append(content.substring(content.indexOf(".") + 1));
+		}
+		sb.append(info.getPubQQ());
+		sb.append(info.getTel());
+		mBlackOrder.add(sb.toString());
+		saveInfo(CommonDefine.BLACK_ORDER_SAVE, mBlackOrder);
+		if (mSearchObservers != null) {
+			for (SearchObserver searchObserver : mSearchObservers) {
+				searchObserver.onDataChange();
+			}
+		}
+	}
+
+	public void saveInfo(String file, Object object) {
 		FileOutputStream temp;
 		try {
-			temp = mContext.openFileOutput(CommonDefine.ORDER_SAVE, Context.MODE_PRIVATE);
+			temp = mContext.openFileOutput(file, Context.MODE_PRIVATE);
 			ObjectOutputStream os = new ObjectOutputStream(temp); 
-			os.writeObject(mAllOrders);
+			os.writeObject(object);
 			os.flush();
 			os.close();
-			Editor editor = mSharedPreferences.edit();
-			editor.putLong(CommonDefine.SAVE_TIME, System.currentTimeMillis());
-			editor.commit();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -140,24 +230,81 @@ public class OrderManager {
 
 	@SuppressWarnings("unchecked")
 	private boolean getBackInfo() {
-		long saveTime = mSharedPreferences.getLong(CommonDefine.SAVE_TIME, 0);
-		if (System.currentTimeMillis() - saveTime < 1000 * 60 * 60 * 24) {
-			FileInputStream temp;
-			try {
-				temp = mContext.openFileInput(CommonDefine.ORDER_SAVE);
-				ObjectInputStream oi = new ObjectInputStream(temp);
-				mAllOrders = (List<OrderInfo>)oi.readObject();
-				oi.close();
-				return true;
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (StreamCorruptedException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+		FileInputStream temp;
+		try {
+			temp = mContext.openFileInput(CommonDefine.ORDER_SAVE);
+			ObjectInputStream oi = new ObjectInputStream(temp);
+			List<OrderInfo> tempOrders = (List<OrderInfo>)oi.readObject();
+			int dayTime = 1000 * 60 * 60 * 24;
+			for (OrderInfo info : tempOrders) {
+				if ((System.currentTimeMillis() - info.getCtime()) < dayTime) {
+					if (mAllOrders == null) {
+						mAllOrders = new ArrayList<OrderInfo>();
+					}
+					mAllOrders.add(info);
+				}
 			}
+			oi.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean getKeepBackInfo() {
+		FileInputStream temp;
+		try {
+			temp = mContext.openFileInput(CommonDefine.KEEP_ORDER_SAVE);
+			ObjectInputStream oi = new ObjectInputStream(temp);
+			List<OrderInfo> tempOrders = (List<OrderInfo>)oi.readObject();
+			int dayTime = 1000 * 60 * 60 * 24 * 7;
+			for (OrderInfo info : tempOrders) {
+				if ((System.currentTimeMillis() - info.getCtime()) < dayTime) {
+					if (mAllKeepOrders == null) {
+						mAllKeepOrders = new ArrayList<OrderInfo>();
+					}
+					mAllKeepOrders.add(info);
+				}
+			}
+			oi.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean getBlackInfo() {
+		FileInputStream temp;
+		try {
+			temp = mContext.openFileInput(CommonDefine.BLACK_ORDER_SAVE);
+			ObjectInputStream oi = new ObjectInputStream(temp);
+			mBlackOrder = (HashSet<String>)oi.readObject();
+			oi.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

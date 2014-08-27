@@ -15,6 +15,7 @@ import com.tyt.net.HttpManager;
 public class TytService extends Service {
 	private boolean mIsRefresh = true;
 	private OrderManager mOrderManager;
+	private int mMaxId = 1;
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -26,7 +27,10 @@ public class TytService extends Service {
 				break;
 			case CommonDefine.ERR_NONE:
 				String orders = (String)msg.obj;
-				mOrderManager.addOrderInfo(orders);
+				int maxId = mOrderManager.addOrderInfo(orders);
+				if (maxId != 1) {
+					mMaxId = maxId;
+				}
 				break;
 			default:
 				break;
@@ -55,7 +59,7 @@ public class TytService extends Service {
 		public void run() {
 			while (mIsRefresh) {
 				HttpManager httpHandler = HttpManager.getInstance(mHandler);
-				httpHandler.getAllInfo(0);
+				httpHandler.getAllInfo(mMaxId);
 				try {
 					Thread.sleep(CommonDefine.DELAY_FOR_GET_DELAY);
 				} catch (InterruptedException e) {
