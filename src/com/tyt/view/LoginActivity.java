@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dxj.tyt.R;
 import com.tyt.background.TytService;
@@ -116,9 +117,9 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	@Override
 	public void handleNomal(String msg) {
 		boolean isSave = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, false);
+		String account = mAccountInput.getText().toString();
+		String password = mPasswordInput.getText().toString();
 		if (isSave) {
-			String account = mAccountInput.getText().toString();
-			String password = mPasswordInput.getText().toString();
 			Editor editor = mSharedPreferences.edit();
 			editor.putString(CommonDefine.ACCOUNT, account);
 			editor.putString(CommonDefine.PASSWORD, password);
@@ -133,6 +134,9 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		}
 
 		Intent serviceIntent = new Intent(this, TytService.class);
+		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
+		serviceIntent.putExtra(CommonDefine.ACCOUNT, account);
+		serviceIntent.putExtra(CommonDefine.PASSWORD, password);
 		startService(serviceIntent);
 
 		Intent allIntent = new Intent(this, AllInfoActivity.class);
@@ -167,5 +171,10 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		Editor editor = mSharedPreferences.edit();
 		editor.putBoolean(CommonDefine.IS_SAVE_ACCOUNT, isChecked);
 		editor.commit();
+	}
+
+	@Override
+	protected void loginOther() {
+		Toast.makeText(this, R.string.login_other, Toast.LENGTH_LONG).show();
 	}
 }

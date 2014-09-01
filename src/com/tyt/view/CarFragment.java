@@ -79,7 +79,7 @@ SearchObserver, OnItemClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mDateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT);
-		
+
 		mInflater = inflater;
 		View searchCarLayout = inflater.inflate(R.layout.search_content, container, false);
 		mSearchHeader = (ViewGroup)searchCarLayout.findViewById(R.id.search_header);
@@ -267,11 +267,13 @@ SearchObserver, OnItemClickListener {
 						List<String> temp;
 						for (LocationInfo locationInfo : needSearchLocation) {
 							if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
+								Log.i("sssss", "TYPE_CITY:" + locationInfo.getName());
 								temp = LocationManager.getAllUsefullLocation(mSearchKey, locationInfo.getParent().getName(), locationInfo.getName(), null);
 							} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
 								LocationInfo county = locationInfo;
 								LocationInfo city = locationInfo.getParent();
 								LocationInfo pro = city.getParent();
+								Log.i("sssss", "TYPE_COUNTY:" + pro.getName() + city.getName() + locationInfo.getName());
 								temp = LocationManager.getAllUsefullLocation(mSearchKey, pro.getName(), city.getName(), county.getName());
 							}
 						}

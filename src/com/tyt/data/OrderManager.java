@@ -112,10 +112,11 @@ public class OrderManager {
 	}
 
 	public List<OrderInfo> search(List<String> startSearchKey, List<String> endSearchKey) {
+		Log.i("sssss", "startSearchKey:" + startSearchKey);
 		List<OrderInfo> startResult = new ArrayList<OrderInfo>();
 		for (int i = 0; i < mAllOrders.size(); i++) {
 			for (int j = 0; j < startSearchKey.size(); j++) {
-				if (mAllOrders.get(i).getStartPoint().equals(startSearchKey.get(j))) {
+				if (startSearchKey.get(j).equals(mAllOrders.get(i).getStartPoint())) {
 					startResult.add(mAllOrders.get(i));
 				}
 			}
@@ -125,7 +126,7 @@ public class OrderManager {
 			List<OrderInfo> endResult = new ArrayList<OrderInfo>();
 			for (int i = 0; i < startResult.size(); i++) {
 				for (int j = 0; j < endSearchKey.size(); j++) {
-					if (startResult.get(i).getDestPoint().equals(endSearchKey.get(j))) {
+					if (endSearchKey.get(j).equals(startResult.get(i).getDestPoint())) {
 						endResult.add(startResult.get(i));
 					}
 				}

@@ -1,14 +1,22 @@
 package com.tyt.net;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
+import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
 import com.tyt.common.CommonUtil;
 import com.tyt.common.JsonTag;
@@ -34,9 +42,9 @@ public class HttpManager {
 	}
 
 	public void login(String account, String password) {
-		List <NameValuePair> params = initRequest(account);
-		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account)); 
-		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password)); 
+		List<NameValuePair> params = initRequest(account);
+		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
+		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password));
 		String response = HttpOperator.doPost(CommonDefine.URL_LOGIN, params);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
@@ -44,50 +52,111 @@ public class HttpManager {
 			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
 		}
 	}
-	
-	public void register(String phone, String password, String qq, String name, String idcard) {
-		List <NameValuePair> params = initRequest(phone);
-		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, phone)); 
-		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password)); 
-		params.add(new BasicNameValuePair(JsonTag.USER_NAME, phone)); 
-		params.add(new BasicNameValuePair(JsonTag.USERSIGN, CommonDefine.USERSIGN)); 
-		params.add(new BasicNameValuePair(JsonTag.PCSIGN, CommonUtil.MD5(phone))); 
-		params.add(new BasicNameValuePair(JsonTag.QQ, qq)); 
-		params.add(new BasicNameValuePair(JsonTag.TRUE_NAME, name)); 
-		params.add(new BasicNameValuePair(JsonTag.ID_CARD, idcard)); 
-		String response = HttpOperator.doPost(CommonDefine.URL_REGISTER, params);
-		Log.i("sssss", response);
+
+	public void getPersonInfo(String account, String password) {
+		List<NameValuePair> params = initRequest(account);
+		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
+		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password));
+		String response = HttpOperator.doPost(CommonDefine.URL_INFO_QUERY, params);
+		if (response == null) {
+			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
+		} else {
+			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			message.arg1 = TytService.FLAG_GET_PERSON_INFO;
+			message.sendToTarget();
+		}
+	}
+
+	public void releaseOrder(String start, String end, String goods, String phone, String nickName, String qq) {
+		List<NameValuePair> params = initRequest(qq);
+		params.add(new BasicNameValuePair(JsonTag.PUB_QQ, qq));
+		params.add(new BasicNameValuePair(JsonTag.NICK_NAME, nickName));
+		params.add(new BasicNameValuePair(JsonTag.STARTPOINT, start));
+		StringBuilder sb = new StringBuilder();
+		sb.append(start);
+		if (end != null && !end.equals("")) {
+			params.add(new BasicNameValuePair(JsonTag.DESTPOINT, end));
+			sb.append("---");
+			sb.append(end);
+		}
+		sb.append(" ");
+		sb.append(goods);
+		sb.append(" ");
+		sb.append(phone);
+		params.add(new BasicNameValuePair(JsonTag.TASK_CONTENT, sb.toString()));
+		params.add(new BasicNameValuePair(JsonTag.STATUS, "" + 1));
+		params.add(new BasicNameValuePair(JsonTag.SOURCE, "" + 0));
+		params.add(new BasicNameValuePair(JsonTag.TEL, phone));
+		DateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+		params.add(new BasicNameValuePair(JsonTag.PUB_TIME, simpleDateFormat.format(new Date())));
+		String response = HttpOperator.doPost(CommonDefine.URL_RELEASE, params);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
 			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
 		}
 	}
-	
+
+	public void register(String phone, String password, String qq, String name, String idcard) {
+		List<NameValuePair> params = initRequest(phone);
+		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, phone));
+		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password));
+		params.add(new BasicNameValuePair(JsonTag.USER_NAME, phone));
+		params.add(new BasicNameValuePair(JsonTag.USERSIGN, CommonDefine.USERSIGN));
+		params.add(new BasicNameValuePair(JsonTag.PCSIGN, CommonUtil.MD5(phone)));
+		params.add(new BasicNameValuePair(JsonTag.QQ, qq));
+		params.add(new BasicNameValuePair(JsonTag.TRUE_NAME, name));
+		params.add(new BasicNameValuePair(JsonTag.ID_CARD, idcard));
+		String response = HttpOperator.doPost(CommonDefine.URL_REGISTER, params);
+		if (response == null) {
+			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
+		} else {
+			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
+		}
+	}
+
+	public void checkTicket(Context context) {
+		SharedPreferences sharedPreferences = context.getSharedPreferences(CommonDefine.SETTING, Context.MODE_PRIVATE);
+		String ticket = sharedPreferences.getString(CommonDefine.TICKET, "");
+		String account = sharedPreferences.getString(CommonDefine.ACCOUNT, "");
+		List<NameValuePair> params = initRequest(ticket);
+		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
+		String response = HttpOperator.doPost(CommonDefine.URL_CHECK_TICKET, params);
+		if (response == null) {
+			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
+		} else {
+			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			message.arg1 = TytService.FLAG_CHECK_TICKET;
+			message.sendToTarget();
+		}
+	}
+
 	public void getAllInfo(int maxId) {
-		List <NameValuePair> params = initRequest("" + maxId);
-		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + maxId)); 
-		params.add(new BasicNameValuePair(JsonTag.SIZE, "" + 1000)); 
+		List<NameValuePair> params = initRequest("" + maxId);
+		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + maxId));
+		params.add(new BasicNameValuePair(JsonTag.SIZE, "" + 1000));
 		String response = HttpOperator.doPost(CommonDefine.URL_QUERY, params);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
-			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
+			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			message.arg1 = TytService.FLAG_GET_ORDER;
+			message.sendToTarget();
 		}
 	}
-	
-	private List <NameValuePair> initRequest(String info) {
-		List <NameValuePair> params = new ArrayList<NameValuePair>();  
-		params.add(new BasicNameValuePair(JsonTag.VERSION, CommonDefine.VERSION)); 
-		params.add(new BasicNameValuePair(JsonTag.PLAT_ID, CommonDefine.PLAT_ID)); 
-		params.add(new BasicNameValuePair(JsonTag.TOKEN, initToken(info))); 
+
+	private List<NameValuePair> initRequest(String info) {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(JsonTag.VERSION, CommonDefine.VERSION));
+		params.add(new BasicNameValuePair(JsonTag.PLAT_ID, CommonDefine.PLAT_ID));
+		params.add(new BasicNameValuePair(JsonTag.TOKEN, initToken(info)));
 		return params;
 	}
 
 	private String initToken(String info) {
 		return CommonUtil.MD5(info + CommonDefine.PRIVATEKEY);
 	}
-	
+
 	public void getVerifyCode(String smsMob, int smsText) {
 		StringBuilder urlSb = new StringBuilder();
 		urlSb.append(CommonDefine.URL_FOR_VERIFYCODE);

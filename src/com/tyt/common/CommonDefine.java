@@ -34,11 +34,16 @@ public class CommonDefine {
 	public static final String URL_LOGIN = URL_BASE + "user/login";
 	public static final String URL_REGISTER = URL_BASE + "user/save";
 	public static final String URL_QUERY = URL_BASE + "transport/query";
+	public static final String URL_CHECK_TICKET = URL_BASE + "user/checkTicket";
 	public static final String URL_MAP_1 = "http://map.sogou.com/#s=m==nav!!from==";
 	public static final String URL_MAP_2 = "|||uid!!to==";
 	public static final String URL_MAP_3 = "|||uid!!fromidx==!!toidx==!!tactic==1!!mode==1!!exactroute==1";
+	
+	public static final String URL_RELEASE = URL_BASE + "transport/save";
+	public static final String URL_INFO_QUERY = URL_BASE + "user/get";
 
 	public static final int DELAY_FOR_GET_DELAY = 15 * 1000;
+	public static final int DELAY_FOR_CHECK_TICKET = 5 * 60 * 1000;
 	public static final String VERSION = "2000";
 	public static final String PLAT_ID = "2";
 	public static final String PRIVATEKEY = "1345~opo-4%";

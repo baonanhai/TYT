@@ -32,16 +32,26 @@ public class OrderInfo implements Serializable{
 			tel =  order.getString(JsonTag.TEL);
 			mtime =  order.getString(JsonTag.TIME);
 			resend =  order.getString(JsonTag.RESEND);
-			uploadCellPhone =  order.getString(JsonTag.UPLOAD_CELL_PHONE);
 			taskContent =  order.getString(JsonTag.TASK_CONTENT);
 			ctime =  order.getLong(JsonTag.CTIME);
 			id =  order.getInt(JsonTag.ID);
 			source =  order.getString(JsonTag.SOURCE);
-			nickName =  order.getString(JsonTag.NICKNAME);
-			destPoint =  order.getString(JsonTag.DESTPOINT);
+			nickName =  order.getString(JsonTag.NICK_NAME);
 			startPoint =  order.getString(JsonTag.STARTPOINT);
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}
+		
+		try {
+			destPoint =  order.getString(JsonTag.DESTPOINT);
+		} catch (JSONException e) {
+			//
+		}
+		
+		try {
+			uploadCellPhone =  order.getString(JsonTag.UPLOAD_CELL_PHONE);
+		} catch (JSONException e) {
+			//
 		}
 	}
 

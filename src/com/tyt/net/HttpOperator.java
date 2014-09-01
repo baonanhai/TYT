@@ -47,7 +47,7 @@ public class HttpOperator {
 		//创建httpRequest对象
 		HttpPost httpRequest = new HttpPost(Url);
 		try {
-			httpRequest.setEntity(new UrlEncodedFormEntity(params));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 			//取得HttpClient对象
 			HttpClient httpclient = new DefaultHttpClient();
 			httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,2000);//连接时间

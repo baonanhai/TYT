@@ -91,10 +91,12 @@ public class LocationManager {
 
 	public static List<String> getAllUsefullLocation(ArrayList<String> result, String pro, String city, String county) {
 		StringBuilder sb = new StringBuilder();
-		if (pro.endsWith("省")) {
-			sb.append(pro.substring(0, pro.length() - 1));
-		} else if (pro.endsWith("自治区")){
-			sb.append(pro.substring(0, pro.length() - 3));
+		if (!pro.equals(city)) {
+			if (pro.endsWith("省")) {
+				sb.append(pro.substring(0, pro.length() - 1));
+			} else if (pro.endsWith("自治区")){
+				sb.append(pro.substring(0, pro.length() - 3));
+			}
 		}
 
 		if (city.endsWith("市")) {
@@ -106,26 +108,29 @@ public class LocationManager {
 		}
 
 		String countyTemp = null;
-		if (county != null && (county.endsWith("县") || county.endsWith("区"))) {
+		if (county != null && (county.endsWith("自治县"))) {
+			countyTemp = county.substring(0, county.length() - 3);
+			if (!hasIn(result, countyTemp)) {
+				result.add(countyTemp);
+			}
+		} else if (county != null && (county.endsWith("县") || county.endsWith("区"))) {
 			countyTemp = county.substring(0, county.length() - 1);
 			if (!hasIn(result, countyTemp)) {
 				result.add(countyTemp);
 			}
 		}
+
+		if (countyTemp != null) {
+			sb.append(countyTemp);
+		}
+
 		if (!hasIn(result, sb.toString())) {
 			result.add(sb.toString());
 		}
 		return result;
 	}
-	
+
 	public static boolean hasIn(List<String> array, String content) {
-		boolean hasIn = false;
-		for (String info : array) {
-			if (content.equals(info)) {
-				hasIn = true;
-				break;
-			}
-		}
-		return hasIn;
+		return array.contains(content);
 	}
 }

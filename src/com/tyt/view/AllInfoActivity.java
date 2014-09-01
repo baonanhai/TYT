@@ -1,10 +1,12 @@
 package com.tyt.view;
 
 import com.dxj.tyt.R;
+import com.tyt.background.TytService;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
@@ -113,6 +115,22 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 		}
 		transaction.commit();
 	}
+	
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
+		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_START_REFRESH);
+		startService(serviceIntent);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
+		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_STOP_REFRESH);
+		startService(serviceIntent);
+	}
 
 	@Override
 	public void handleNetErr(String err) {
@@ -126,7 +144,6 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	public void handleNomal(String msg) {
-
 	}
 
 	@Override

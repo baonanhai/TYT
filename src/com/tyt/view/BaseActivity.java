@@ -3,18 +3,25 @@ package com.tyt.view;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 
 import com.dxj.tyt.R;
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
 import com.tyt.common.TYTApplication;
 
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends Activity {
+	public static final String ACTION_LOGIN_OTHER = "com.tyt.loginother"; 
+
 	private TYTApplication mApplication;
+	private LoginOtherReceiver mLoginOtherReceiver;
 	protected Handler mHandler = new Handler() {
 
 		@Override
@@ -52,6 +59,10 @@ public abstract class BaseActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mApplication = (TYTApplication)getApplication();
+		mLoginOtherReceiver = new LoginOtherReceiver();  
+		IntentFilter filter = new IntentFilter();  
+		filter.addAction(ACTION_LOGIN_OTHER);  
+		registerReceiver(mLoginOtherReceiver, filter);  
 	}
 
 	public void doInThread(Runnable task) {
@@ -62,4 +73,22 @@ public abstract class BaseActivity extends ActionBarActivity {
 	public abstract void handleServerErr(String err);
 	public abstract void handleNomal(String msg);
 	public abstract void handleOtherMsg(Message msg);
+
+	class LoginOtherReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			loginOther();
+		}
+	}
+
+	protected void loginOther() {
+		finish();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(mLoginOtherReceiver);
+	}
 }
