@@ -3,17 +3,10 @@ package com.tyt.view;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.dxj.tyt.R;
-import com.tyt.common.CommonDefine;
-import com.tyt.common.JsonTag;
-import com.tyt.common.TYTApplication;
-import com.tyt.net.HttpManager;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.dxj.tyt.R;
+import com.tyt.common.CommonDefine;
+import com.tyt.common.JsonTag;
+import com.tyt.common.TYTApplication;
+import com.tyt.net.HttpManager;
 
 public class ReleaseFragment extends Fragment implements OnClickListener {
 	private EditText mStart;

@@ -99,8 +99,9 @@ public class LocationManager {
 			}
 		}
 
+		String cityTemp = null;
 		if (city.endsWith("市")) {
-			String cityTemp = city.substring(0, city.length() - 1);
+			cityTemp = city.substring(0, city.length() - 1);
 			if (!hasIn(result, cityTemp)) {
 				result.add(cityTemp);
 			}
@@ -110,18 +111,20 @@ public class LocationManager {
 		String countyTemp = null;
 		if (county != null && (county.endsWith("自治县"))) {
 			countyTemp = county.substring(0, county.length() - 3);
-			if (!hasIn(result, countyTemp)) {
-				result.add(countyTemp);
-			}
 		} else if (county != null && (county.endsWith("县") || county.endsWith("区"))) {
 			countyTemp = county.substring(0, county.length() - 1);
-			if (!hasIn(result, countyTemp)) {
-				result.add(countyTemp);
-			}
+		}
+		if (!hasIn(result, countyTemp)) {
+			result.add(countyTemp);
 		}
 
 		if (countyTemp != null) {
 			sb.append(countyTemp);
+		}
+		
+		String cc = cityTemp + countyTemp;
+		if (!hasIn(result, cc)) {
+			result.add(cc);
 		}
 
 		if (!hasIn(result, sb.toString())) {
@@ -131,6 +134,9 @@ public class LocationManager {
 	}
 
 	public static boolean hasIn(List<String> array, String content) {
+		if (content == null) {
+			return true;
+		}
 		return array.contains(content);
 	}
 }

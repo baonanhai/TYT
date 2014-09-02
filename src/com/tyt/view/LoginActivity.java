@@ -119,19 +119,20 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		boolean isSave = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, false);
 		String account = mAccountInput.getText().toString();
 		String password = mPasswordInput.getText().toString();
+		
+		Editor editor = mSharedPreferences.edit();
 		if (isSave) {
-			Editor editor = mSharedPreferences.edit();
 			editor.putString(CommonDefine.ACCOUNT, account);
 			editor.putString(CommonDefine.PASSWORD, password);
-			try {
-				JSONObject response = new JSONObject(msg);
-				editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
-				editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			editor.commit();
 		}
+		try {
+			JSONObject response = new JSONObject(msg);
+			editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
+			editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		editor.commit();
 
 		Intent serviceIntent = new Intent(this, TytService.class);
 		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
