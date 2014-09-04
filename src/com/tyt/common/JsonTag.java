@@ -11,6 +11,7 @@ public class JsonTag {
 	public static final String TRUE_NAME = "trueName";
 	public static final String ID_CARD = "idCard";
 	public static final String MAX_ID = "maxID";
+	public static final String MTIME = "mtime";
 	public static final String SIZE = "size";
 	public static final String VERSION = "version";
 	public static final String PLAT_ID = "platId";

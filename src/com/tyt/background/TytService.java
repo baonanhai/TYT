@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
@@ -26,13 +27,17 @@ public class TytService extends Service {
 
 	public static final String FLAG = "Flag";
 	public static final int FLAG_GET_ORDER = 0;
-	public static final int FLAG_CHECK_TICKET = FLAG_GET_ORDER + 1;
+	public static final int FLAG_GET_CHANGE_ORDER = FLAG_GET_ORDER + 1;
+	public static final int FLAG_CHECK_TICKET = FLAG_GET_CHANGE_ORDER + 1;
 	public static final int FLAG_GET_PERSON_INFO = FLAG_CHECK_TICKET + 1;
 	public static final int FLAG_RELEASE = FLAG_GET_PERSON_INFO + 1;
 	private boolean mIsRefresh = true;
+	private boolean mIsCheckTicket = true;
+	private boolean mIsCheckChange = true;
 	private OrderManager mOrderManager;
 	private int mMaxId = 1;
 	private TYTApplication mApplication ;
+	private long mTime;
 
 	private Handler mHandler = new Handler() {
 
@@ -66,9 +71,13 @@ public class TytService extends Service {
 			try {
 				msgJson = new JSONObject((String)msg.obj);
 				int code = msgJson.getInt(JsonTag.CODE);
-				if (code == CommonDefine.ERR_SERVER) {
-					Intent loginOtherIntent = new Intent(BaseActivity.ACTION_LOGIN_OTHER);
-					sendBroadcast(loginOtherIntent);
+				String strMsg = msgJson.getString(JsonTag.MSG);
+				if (!strMsg.trim().equals("ok")) {
+					int msgCode = Integer.parseInt(strMsg);
+					if (code == CommonDefine.ERR_SERVER && msgCode == 2) {
+						Intent loginOtherIntent = new Intent(BaseActivity.ACTION_LOGIN_OTHER);
+						sendBroadcast(loginOtherIntent);
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -76,6 +85,14 @@ public class TytService extends Service {
 			break;
 		case FLAG_GET_PERSON_INFO:
 			mApplication.setPersonInfo(new PersonInfo((String)msg.obj));
+			break;
+		case FLAG_GET_CHANGE_ORDER:
+			String changeOrders = (String)msg.obj;
+			Log.i("sssss", "Order change:" + changeOrders);
+			long mtime = mOrderManager.changeOrderInfo(changeOrders);
+			if (mtime != 1) {
+				mTime = mtime;
+			}
 			break;
 		default:
 			break;
@@ -89,10 +106,10 @@ public class TytService extends Service {
 
 	@Override
 	public void onCreate() {
-		//初始化地址数据
-		LocationManager.getInstance(getApplicationContext()).initLocationInfo();
 		mOrderManager = OrderManager.getInstance(getApplicationContext());
 		mApplication = (TYTApplication)getApplication();
+		
+		mTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -100,10 +117,11 @@ public class TytService extends Service {
 		if (intent != null) {
 			switch (intent.getIntExtra(COMMAND, COMMAND_INIT)) {
 			case COMMAND_INIT:
-				mApplication.doInThread(new RefreshData());
 				String account = intent.getStringExtra(CommonDefine.ACCOUNT);
 				String password = intent.getStringExtra(CommonDefine.PASSWORD);
 				mApplication.doInThread(new PersonDataInit(account, password));
+				mApplication.doInThread(new CheckTicket());
+				mApplication.doInThread(new ChangeHandler());
 				break;
 			case COMMAND_START_REFRESH:
 				mIsRefresh = true;
@@ -153,15 +171,38 @@ public class TytService extends Service {
 	class CheckTicket implements Runnable {
 		@Override
 		public void run() {
-			while (mIsRefresh) {
+			while (mIsCheckTicket) {
+				HttpManager httpHandler = HttpManager.getInstance(mHandler);
+				httpHandler.checkTicket(getApplicationContext());
 				try {
 					Thread.sleep(CommonDefine.DELAY_FOR_CHECK_TICKET);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				HttpManager httpHandler = HttpManager.getInstance(mHandler);
-				httpHandler.checkTicket(getApplicationContext());
 			}
 		}
+	}
+	
+	class ChangeHandler implements Runnable {
+		@Override
+		public void run() {
+			while (mIsCheckChange) {
+				HttpManager httpHandler = HttpManager.getInstance(mHandler);
+				httpHandler.getAllChangeInfo(mTime);
+				try {
+					Thread.sleep(CommonDefine.DELAY_FOR_GET_DELAY);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mIsCheckTicket = false;
+		mIsRefresh = false;
+		mIsCheckChange = false;
 	}
 }

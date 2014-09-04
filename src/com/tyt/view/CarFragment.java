@@ -9,7 +9,6 @@ import java.util.List;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -78,7 +77,7 @@ SearchObserver, OnItemClickListener {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mDateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT);
+		mDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");  
 
 		mInflater = inflater;
 		View searchCarLayout = inflater.inflate(R.layout.search_content, container, false);
@@ -264,20 +263,7 @@ SearchObserver, OnItemClickListener {
 						mStart.setRange(mStartRangeValue);
 						List<LocationInfo> needSearchLocation = mLocationManager.getAllLocationInRange(mStart);
 						mSearchKey = new ArrayList<String>();
-						List<String> temp;
-						for (LocationInfo locationInfo : needSearchLocation) {
-							if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
-								Log.i("sssss", "TYPE_CITY:" + locationInfo.getName());
-								temp = LocationManager.getAllUsefullLocation(mSearchKey, locationInfo.getParent().getName(), locationInfo.getName(), null);
-							} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
-								LocationInfo county = locationInfo;
-								LocationInfo city = locationInfo.getParent();
-								LocationInfo pro = city.getParent();
-								Log.i("sssss", "TYPE_COUNTY:" + pro.getName() + city.getName() + locationInfo.getName());
-								temp = LocationManager.getAllUsefullLocation(mSearchKey, pro.getName(), city.getName(), county.getName());
-							}
-						}
-
+						initSearchKey(mSearchKey, needSearchLocation);
 						if (mEnd != null) {
 							if (mEnd.getCity() == null) {
 								Toast.makeText(getActivity(), R.string.search_no_city, Toast.LENGTH_LONG).show();
@@ -285,17 +271,7 @@ SearchObserver, OnItemClickListener {
 								mEnd.setRange(mEndRangeValue);
 								List<LocationInfo> needSearchEndLocation = mLocationManager.getAllLocationInRange(mEnd);
 								mSearchEndKey = new ArrayList<String>();
-								List<String> endTemp;
-								for (LocationInfo locationInfo : needSearchEndLocation) {
-									if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
-										endTemp = LocationManager.getAllUsefullLocation(mSearchEndKey, locationInfo.getParent().getName(), locationInfo.getName(), null);
-									} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
-										LocationInfo county = locationInfo;
-										LocationInfo city = locationInfo.getParent();
-										LocationInfo pro = city.getParent();
-										endTemp = LocationManager.getAllUsefullLocation(mSearchEndKey, pro.getName(), city.getName(), county.getName());
-									}
-								}
+								initSearchKey(mSearchEndKey, needSearchEndLocation);
 								showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
 								mOrderManager.addSearchObserver(this);
 							}
@@ -330,6 +306,25 @@ SearchObserver, OnItemClickListener {
 			break;
 		default:
 			break;
+		}
+	}
+
+	private void initSearchKey(ArrayList<String> result, List<LocationInfo> needSearchLocation) {
+		for (LocationInfo locationInfo : needSearchLocation) {
+			if (locationInfo.getLocationType() == LocationInfo.TYPE_CITY) {
+				LocationManager.getAllUsefullLocation(result, locationInfo.getParent().getName(), locationInfo.getName(), null, null);
+			} else if (locationInfo.getLocationType() == LocationInfo.TYPE_COUNTY) {
+				LocationInfo county = locationInfo;
+				LocationInfo city = locationInfo.getParent();
+				LocationInfo pro = city.getParent();
+				LocationManager.getAllUsefullLocation(result, pro.getName(), city.getName(), county.getName(), null);
+			} else if (locationInfo.getLocationType() == LocationInfo.TYPE_TOWN) {
+				LocationInfo town = locationInfo;
+				LocationInfo county = locationInfo.getParent();
+				LocationInfo city = county.getParent();
+				LocationInfo pro = city.getParent();
+				LocationManager.getAllUsefullLocation(result, pro.getName(), city.getName(), county.getName(), town.getName());
+			}
 		}
 	}
 

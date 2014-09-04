@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.TextView;
 
 import com.dxj.tyt.R;
 import com.tyt.common.CommonDefine;
@@ -81,6 +82,12 @@ public abstract class BaseActivity extends Activity {
 			loginOther();
 		}
 	}
+	
+	protected void setTitle(String title) {
+		TextView titleView = (TextView)findViewById(R.id.title);
+		titleView.setText(title);
+	}
+
 
 	protected void loginOther() {
 		finish();

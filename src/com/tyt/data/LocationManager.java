@@ -89,7 +89,7 @@ public class LocationManager {
 		mAllLocationInfos.add(info);
 	}
 
-	public static List<String> getAllUsefullLocation(ArrayList<String> result, String pro, String city, String county) {
+	public static void getAllUsefullLocation(ArrayList<String> result, String pro, String city, String county, String town) {
 		StringBuilder sb = new StringBuilder();
 		if (!pro.equals(city)) {
 			if (pro.endsWith("省")) {
@@ -99,7 +99,7 @@ public class LocationManager {
 			}
 		}
 
-		String cityTemp = null;
+		String cityTemp = city;
 		if (city.endsWith("市")) {
 			cityTemp = city.substring(0, city.length() - 1);
 			if (!hasIn(result, cityTemp)) {
@@ -108,29 +108,53 @@ public class LocationManager {
 			sb.append(cityTemp);
 		}
 
-		String countyTemp = null;
-		if (county != null && (county.endsWith("自治县"))) {
-			countyTemp = county.substring(0, county.length() - 3);
-		} else if (county != null && (county.endsWith("县") || county.endsWith("区"))) {
-			countyTemp = county.substring(0, county.length() - 1);
-		}
-		if (!hasIn(result, countyTemp)) {
-			result.add(countyTemp);
-		}
+		if (county != null) {
+			String countyTemp = null;
+			if ((county.endsWith("自治县"))) {
+				countyTemp = county.substring(0, county.length() - 3);
+			} else if ((county.endsWith("县") || county.endsWith("区") 
+					|| county.endsWith("市"))) {
+				countyTemp = county.substring(0, county.length() - 1);
+			}
 
-		if (countyTemp != null) {
+			if (!hasIn(result, countyTemp)) {
+				result.add(countyTemp);
+			}
+
 			sb.append(countyTemp);
-		}
-		
-		String cc = cityTemp + countyTemp;
-		if (!hasIn(result, cc)) {
-			result.add(cc);
+
+			String cc = cityTemp + countyTemp;
+			if (!hasIn(result, cc)) {
+				result.add(cc);
+			}
+
+			if (town != null) {
+				String townTemp = town;
+				if (town.endsWith("镇")) {
+					townTemp = town.substring(0, town.length() - 1);
+				}
+
+				if (!hasIn(result, townTemp)) {
+					result.add(townTemp);
+				}
+
+				sb.append(townTemp);
+
+				String ct = countyTemp + townTemp;
+				if (!hasIn(result, ct)) {
+					result.add(ct);
+				}
+
+				String cct = cityTemp + countyTemp + townTemp;
+				if (!hasIn(result, cct)) {
+					result.add(cct);
+				}
+			}
 		}
 
 		if (!hasIn(result, sb.toString())) {
 			result.add(sb.toString());
 		}
-		return result;
 	}
 
 	public static boolean hasIn(List<String> array, String content) {

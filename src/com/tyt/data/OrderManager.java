@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -97,7 +98,18 @@ public class OrderManager {
 				}
 			}
 
+			long todayStart = getTimesmorning();
+			List<OrderInfo> result = new ArrayList<>();
+			for (OrderInfo orderInfo : mAllOrders) {
+				if (orderInfo.getCtime() > todayStart) {
+					result.add(orderInfo);
+				} else {
+					isDataChange = true;
+				}
+			}
+
 			if (isDataChange) {
+				mAllOrders = result;
 				saveInfo(CommonDefine.ORDER_SAVE, mAllOrders);
 				if (mSearchObservers != null) {
 					for (SearchObserver searchObserver : mSearchObservers) {
@@ -110,14 +122,46 @@ public class OrderManager {
 		}
 		return maxId;
 	}
+	
+	public long changeOrderInfo(String response) {
+		long mtime = 1;
+		try {
+			boolean isDataChange = false;
+			JSONArray allInfo = new JSONObject(response).getJSONArray(JsonTag.DATA);
+			for (int i = 0; i < allInfo.length(); i++) {
+				OrderInfo temp = new OrderInfo(allInfo.getJSONObject(i));
+				for (int j = 0; j < mAllOrders.size(); j++) {
+					OrderInfo tempOrderInfo = mAllOrders.get(j);
+					if (tempOrderInfo.getId() == temp.getId()) {
+						tempOrderInfo.setStatus(temp.getStatus());
+						isDataChange = true;
+						break;
+					}
+				}
+			}
+
+			if (isDataChange) {
+				saveInfo(CommonDefine.ORDER_SAVE, mAllOrders);
+				if (mSearchObservers != null) {
+					for (SearchObserver searchObserver : mSearchObservers) {
+						searchObserver.onDataChange();
+					}
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return mtime;
+	}
 
 	public List<OrderInfo> search(List<String> startSearchKey, List<String> endSearchKey) {
-		Log.i("sssss", "startSearchKey:" + startSearchKey);
+		long todayStart = getTimesmorning();
 		List<OrderInfo> startResult = new ArrayList<OrderInfo>();
 		for (int i = 0; i < mAllOrders.size(); i++) {
 			for (int j = 0; j < startSearchKey.size(); j++) {
-				if (startSearchKey.get(j).equals(mAllOrders.get(i).getStartPoint())) {
-					startResult.add(mAllOrders.get(i));
+				OrderInfo tempStart = mAllOrders.get(i);
+				if (startSearchKey.get(j).equals(tempStart.getStartPoint()) && tempStart.getCtime() > todayStart) {
+					startResult.add(tempStart);
 				}
 			}
 		}
@@ -125,9 +169,10 @@ public class OrderManager {
 		if (endSearchKey != null) {
 			List<OrderInfo> endResult = new ArrayList<OrderInfo>();
 			for (int i = 0; i < startResult.size(); i++) {
+				OrderInfo tempStop = startResult.get(i);
 				for (int j = 0; j < endSearchKey.size(); j++) {
-					if (endSearchKey.get(j).equals(startResult.get(i).getDestPoint())) {
-						endResult.add(startResult.get(i));
+					if (endSearchKey.get(j).equals(tempStop.getDestPoint()) && tempStop.getCtime() > todayStart) {
+						endResult.add(tempStop);
 					}
 				}
 			}
@@ -163,7 +208,15 @@ public class OrderManager {
 	}
 
 	public List<OrderInfo> getAllOrder() {
-		return mAllOrders;
+		List<OrderInfo> result = new ArrayList<OrderInfo>();
+		for (OrderInfo info : mAllOrders) {
+			if (info.getStatus() == 1) {
+				result.add(info);
+			} else {
+				Log.i("sssss", "order change :" + info.getId());
+			}
+		}
+		return result;
 	}
 
 	public OrderInfo getOrder(int orderId) {
@@ -188,13 +241,30 @@ public class OrderManager {
 
 	public void keep(OrderInfo info) {
 		if (!mAllKeepOrders.contains(info)) {
+			info.setKeepTime(System.currentTimeMillis());
 			mAllKeepOrders.add(info);
 			saveInfo(CommonDefine.KEEP_ORDER_SAVE, mAllKeepOrders);
 		}
 	}
 
 	public List<OrderInfo> getAllKeepOrder() {
-		return mAllKeepOrders;
+		long weekStart = getTimesWeekmorning();
+		List<OrderInfo> result = new ArrayList<>();
+		boolean isChange = false;
+		for (OrderInfo orderInfo : mAllKeepOrders) {
+			if (orderInfo.getKeepTime() > weekStart) {
+				result.add(orderInfo);
+			} else {
+				isChange = true;
+			}
+		}
+
+		if (isChange) {
+			mAllKeepOrders = result;
+			saveInfo(CommonDefine.KEEP_ORDER_SAVE, mAllKeepOrders);
+		}
+
+		return result;
 	}
 
 	public void addBlackOrder(OrderInfo info) {
@@ -235,16 +305,7 @@ public class OrderManager {
 		try {
 			temp = mContext.openFileInput(CommonDefine.ORDER_SAVE);
 			ObjectInputStream oi = new ObjectInputStream(temp);
-			List<OrderInfo> tempOrders = (List<OrderInfo>)oi.readObject();
-			int dayTime = 1000 * 60 * 60 * 24;
-			for (OrderInfo info : tempOrders) {
-				if ((System.currentTimeMillis() - info.getCtime()) < dayTime) {
-					if (mAllOrders == null) {
-						mAllOrders = new ArrayList<OrderInfo>();
-					}
-					mAllOrders.add(info);
-				}
-			}
+			mAllOrders = (List<OrderInfo>)oi.readObject();
 			oi.close();
 			return true;
 		} catch (FileNotFoundException e) {
@@ -265,16 +326,7 @@ public class OrderManager {
 		try {
 			temp = mContext.openFileInput(CommonDefine.KEEP_ORDER_SAVE);
 			ObjectInputStream oi = new ObjectInputStream(temp);
-			List<OrderInfo> tempOrders = (List<OrderInfo>)oi.readObject();
-			int dayTime = 1000 * 60 * 60 * 24 * 7;
-			for (OrderInfo info : tempOrders) {
-				if ((System.currentTimeMillis() - info.getCtime()) < dayTime) {
-					if (mAllKeepOrders == null) {
-						mAllKeepOrders = new ArrayList<OrderInfo>();
-					}
-					mAllKeepOrders.add(info);
-				}
-			}
+			mAllKeepOrders = (List<OrderInfo>)oi.readObject();
 			oi.close();
 			return true;
 		} catch (FileNotFoundException e) {
@@ -309,4 +361,20 @@ public class OrderManager {
 		}
 		return false;
 	}
+
+	public static long getTimesmorning(){ 
+		Calendar cal = Calendar.getInstance(); 
+		cal.set(Calendar.HOUR_OF_DAY, 0); 
+		cal.set(Calendar.SECOND, 0); 
+		cal.set(Calendar.MINUTE, 0); 
+		cal.set(Calendar.MILLISECOND, 0); 
+		return cal.getTimeInMillis(); 
+	} 
+
+	//获得本周一0点时间 
+	public static long getTimesWeekmorning(){ 
+		Calendar cal = Calendar.getInstance(); 
+		cal.set(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0,0); 
+		return cal.getTimeInMillis(); 
+	} 
 }

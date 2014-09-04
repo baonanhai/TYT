@@ -13,6 +13,7 @@ public class CommonDefine {
 	public static final String KEEP_ORDER_SAVE = "KeepOrderSave";
 	public static final String BLACK_ORDER_SAVE = "BlackOrderSave";
 	public static final String IS_SAVE_ACCOUNT = "IsSaveAccount";
+	public static final String IS_AUTO_LOGIN = "IsAutoLogin";
 	public static final String ACCOUNT = "Account";
 	public static final String SERVE_DAYS = "ServeDays";
 	public static final String PASSWORD = "Password";
@@ -42,7 +43,7 @@ public class CommonDefine {
 	public static final String URL_RELEASE = URL_BASE + "transport/save";
 	public static final String URL_INFO_QUERY = URL_BASE + "user/get";
 
-	public static final int DELAY_FOR_GET_DELAY = 15 * 1000;
+	public static final int DELAY_FOR_GET_DELAY = 10 * 1000;
 	public static final int DELAY_FOR_CHECK_TICKET = 5 * 60 * 1000;
 	public static final String VERSION = "2000";
 	public static final String PLAT_ID = "2";

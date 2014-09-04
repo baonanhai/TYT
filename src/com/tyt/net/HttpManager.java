@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
@@ -67,7 +66,7 @@ public class HttpManager {
 		}
 	}
 
-	public void releaseOrder(String start, String end, String goods, String phone, String nickName, String qq) {
+	public void releaseOrder(String start, String end, String goods, String phone, String nickName, String qq, String uploadCellPhone) {
 		List<NameValuePair> params = initRequest(qq);
 		params.add(new BasicNameValuePair(JsonTag.PUB_QQ, qq));
 		params.add(new BasicNameValuePair(JsonTag.NICK_NAME, nickName));
@@ -89,6 +88,8 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.TEL, phone));
 		DateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
 		params.add(new BasicNameValuePair(JsonTag.PUB_TIME, simpleDateFormat.format(new Date())));
+		params.add(new BasicNameValuePair(JsonTag.UPLOAD_CELL_PHONE, uploadCellPhone));
+		
 		String response = HttpOperator.doPost(CommonDefine.URL_RELEASE, params);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
@@ -141,6 +142,22 @@ public class HttpManager {
 		} else {
 			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
 			message.arg1 = TytService.FLAG_GET_ORDER;
+			message.sendToTarget();
+		}
+	}
+	
+	public void getAllChangeInfo(long time) {
+		List<NameValuePair> params = initRequest("" + 1);
+		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + 1));
+		params.add(new BasicNameValuePair(JsonTag.SIZE, "" + 1000));
+		params.add(new BasicNameValuePair(JsonTag.MTIME, "" + time));
+		params.add(new BasicNameValuePair(JsonTag.STATUS, "" + 0));
+		String response = HttpOperator.doPost(CommonDefine.URL_QUERY, params);
+		if (response == null) {
+			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
+		} else {
+			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			message.arg1 = TytService.FLAG_GET_CHANGE_ORDER;
 			message.sendToTarget();
 		}
 	}

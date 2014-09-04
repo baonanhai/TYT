@@ -117,8 +117,8 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 	}
 	
 	@Override
-	protected void onRestart() {
-		super.onRestart();
+	protected void onResume() {
+		super.onResume();
 		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
 		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_START_REFRESH);
 		startService(serviceIntent);
@@ -149,5 +149,12 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 	@Override
 	public void handleOtherMsg(Message msg) {
 
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
+		stopService(serviceIntent);
 	}
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,14 +29,17 @@ import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
 import com.tyt.net.HttpManager;
 
-public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickListener, OnCheckedChangeListener{
+public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickListener {
 	private EditText mAccountInput;
 	private EditText mPasswordInput;
 	private Button mLogin;
 	private Button mRegister;
 	private TextView mErrTip;
-	private CheckBox mIsSaveCheck;
+	private TextView mIsSaveCheck;
+	private TextView mIsAutoLoginCheck;
 	private SharedPreferences mSharedPreferences;
+	private boolean mIsSavePassword = true;
+	private boolean mIsAutoLogin = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +50,11 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		mAccountInput.addTextChangedListener(this);
 		mPasswordInput = (EditText)findViewById(R.id.password);
 		mPasswordInput.addTextChangedListener(this);
-		mIsSaveCheck = (CheckBox)findViewById(R.id.is_save_check);
-		mIsSaveCheck.setOnCheckedChangeListener(this);
+		mIsSaveCheck = (TextView)findViewById(R.id.is_save_check);
+		mIsSaveCheck.setOnClickListener(this);
+		mIsAutoLoginCheck = (TextView)findViewById(R.id.is_auto_login);
+		mIsAutoLoginCheck.setOnClickListener(this);
+		
 		mLogin = (Button)findViewById(R.id.login);
 		mLogin.setOnClickListener(this);
 		mRegister = (Button)findViewById(R.id.register);
@@ -55,14 +63,25 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 
 		mSharedPreferences = getSharedPreferences(CommonDefine.SETTING, Context.MODE_PRIVATE);
 
-		boolean isSave = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, false);
-		if (isSave) {
+		mIsSavePassword = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, true);
+		if (mIsSavePassword) {
 			String account = mSharedPreferences.getString(CommonDefine.ACCOUNT, "");
 			String password = mSharedPreferences.getString(CommonDefine.PASSWORD, "");
 			mAccountInput.setText(account);
 			mPasswordInput.setText(password);
-			mIsSaveCheck.setChecked(true);
+			setLeftDrawable(mIsSaveCheck, R.drawable.select_yes);
+		} else {
+			setLeftDrawable(mIsSaveCheck, R.drawable.select_no);
 		}
+		
+		mIsAutoLogin = mSharedPreferences.getBoolean(CommonDefine.IS_AUTO_LOGIN, true);
+		if (mIsAutoLogin) {
+			setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_yes);
+		} else {
+			setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_no);
+		}
+		
+		setTitle(getString(R.string.login));
 	}
 
 	@Override
@@ -86,9 +105,38 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			Intent registerIntent = new Intent(this, RegisterActivity.class);
 			startActivityForResult(registerIntent, CommonDefine.REQUESTCODE_REGISTER);
 			break;
+		case R.id.is_save_check:
+			if (mIsSavePassword) {
+				setLeftDrawable(mIsSaveCheck, R.drawable.select_no);
+			} else {
+				setLeftDrawable(mIsSaveCheck, R.drawable.select_yes);
+			}
+			mIsSavePassword = !mIsSavePassword;
+			Editor editor = mSharedPreferences.edit();
+			editor.putBoolean(CommonDefine.IS_SAVE_ACCOUNT, mIsSavePassword);
+			editor.commit();
+			break;
+		case R.id.is_auto_login:
+			if (mIsAutoLogin) {
+				setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_no);
+			} else {
+				setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_yes);
+			}
+			
+			mIsAutoLogin = !mIsAutoLogin;
+			Editor editor1 = mSharedPreferences.edit();
+			editor1.putBoolean(CommonDefine.IS_AUTO_LOGIN, mIsAutoLogin);
+			editor1.commit();
+			break;
 		default:
 			break;
 		}
+	}
+	
+	private void setLeftDrawable(TextView view, int drawableId) {
+		Drawable drawable = getResources().getDrawable(drawableId);
+		drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+		view.setCompoundDrawables(drawable, null, null, null);
 	}
 
 	class LoginRunnable implements Runnable {
@@ -165,13 +213,6 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	@Override
 	public void handleOtherMsg(Message msg) {
 
-	}
-
-	@Override
-	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		Editor editor = mSharedPreferences.edit();
-		editor.putBoolean(CommonDefine.IS_SAVE_ACCOUNT, isChecked);
-		editor.commit();
 	}
 
 	@Override

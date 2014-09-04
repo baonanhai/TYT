@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -77,6 +78,7 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		mTip.setText("");
 		String start = mStart.getText().toString();
 		if (start.equals("")) {
 			mTip.setText(R.string.err_no_start);
@@ -103,6 +105,7 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 		private String mEnd;
 		private String mGoods;
 		private String mPhone;
+		private String mUploadCellPhone;
 		private String mNickName;
 		private String mQq;
 
@@ -113,12 +116,13 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 			mPhone = phone;
 			mNickName = mApplication.getPersonInfo().nickname;
 			mQq = mApplication.getPersonInfo().qq;
+			mUploadCellPhone = mApplication.getPersonInfo().cellPhone;
 		}
 
 		@Override
 		public void run() {
 			HttpManager httpHandler = HttpManager.getInstance(mHandler);
-			httpHandler.releaseOrder(mStart, mEnd, mGoods, mPhone, mNickName, mQq);
+			httpHandler.releaseOrder(mStart, mEnd, mGoods, mPhone, mNickName, mQq, mUploadCellPhone);
 		}
 	}
 	

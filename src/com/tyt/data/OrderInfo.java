@@ -23,6 +23,7 @@ public class OrderInfo implements Serializable{
 	private String nickName;
 	private String destPoint;
 	private String startPoint;
+	private long mKeepTime;
 
 	public OrderInfo(JSONObject order) {
 		try {
@@ -65,6 +66,10 @@ public class OrderInfo implements Serializable{
 
 	public int getStatus() {
 		return status;
+	}
+	
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 	public String getTel() {
@@ -109,6 +114,14 @@ public class OrderInfo implements Serializable{
 
 	public String getStartPoint() {
 		return startPoint;
+	}
+	
+	public long getKeepTime() {
+		return mKeepTime;
+	}
+
+	public void setKeepTime(long keepTime) {
+		mKeepTime = keepTime;
 	}
 
 	@Override

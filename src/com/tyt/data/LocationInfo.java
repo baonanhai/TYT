@@ -8,12 +8,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 public class LocationInfo {
 	private static final int TYPE_PRO = 0;
 	public static final int TYPE_CITY = TYPE_PRO + 1;
 	public static final int TYPE_COUNTY = TYPE_CITY + 1;
-	private static final int TYPE_TOWN = TYPE_COUNTY + 1;
+	public static final int TYPE_TOWN = TYPE_COUNTY + 1;
 
 	public static final String TAG_PRO = "pro";
 	public static final String TAG_RF = "RF";
@@ -87,6 +88,11 @@ public class LocationInfo {
 
 		if (mLocationType != TYPE_PRO) {
 			LocationManager.getInstance(context).addLocationInfo(this);
+		}
+		
+		if (mLocationType == TYPE_TOWN) {
+			mPx = parent.getPx();
+			mPy = parent.getPy();
 		}
 
 		mParent = parent;

@@ -24,21 +24,28 @@ public class KeepFragment extends Fragment implements OnItemClickListener {
 	private LayoutInflater mInflater;
 	private DateFormat mDateFormat;
 	private List<OrderInfo> mKeepOrder;
+	private OrderManager mOrderManager;
+	private ListView mKeepList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mInflater = inflater;
 		View keepLayout = inflater.inflate(R.layout.keep, container, false);
-		OrderManager orderManager = OrderManager.getInstance(getActivity().getApplicationContext());
-		mKeepOrder = orderManager.getAllKeepOrder();
-		KeepAdapter keepAdapter = new KeepAdapter(mKeepOrder);
-		ListView keepList = (ListView)keepLayout.findViewById(R.id.keep);
-		keepList.setAdapter(keepAdapter);
-		keepList.setOnItemClickListener(this);
-		mDateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT);
+		mOrderManager = OrderManager.getInstance(getActivity().getApplicationContext());
+		mKeepList = (ListView)keepLayout.findViewById(R.id.keep);
+		mKeepList.setOnItemClickListener(this);
+		mDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		return keepLayout;
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		mKeepOrder = mOrderManager.getAllKeepOrder();
+		KeepAdapter keepAdapter = new KeepAdapter(mKeepOrder);
+		mKeepList.setAdapter(keepAdapter);
+	}
+
 	class KeepAdapter extends BaseAdapter {
 		private List<OrderInfo> mKeepOrder;
 		
@@ -76,7 +83,8 @@ public class KeepFragment extends Fragment implements OnItemClickListener {
 			tag.mContent.setText(mKeepOrder.get(position).getTaskContent());
 			String cTime= mDateFormat.format(new Date(mKeepOrder.get(position).getCtime()));
 			tag.mCreatTime.setText(cTime);
-			tag.mContactTime.setText(cTime);
+			String kTime= mDateFormat.format(new Date(mKeepOrder.get(position).getKeepTime()));
+			tag.mContactTime.setText(kTime);
 			return convertView;
 		}
 		
