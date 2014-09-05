@@ -1,13 +1,15 @@
 package com.tyt.view;
 
+import java.lang.ref.WeakReference;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,39 +33,52 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 	private Button mRelease;
 	private TextView mTip;
 	private TYTApplication mApplication;
-	
-	private Handler mHandler = new Handler() {
+
+	protected Handler mHandler;
+
+	private static class MyHandler extends Handler {  
+		private WeakReference<ReleaseFragment> mReleaseFragment;
+
+		public MyHandler(ReleaseFragment releaseFragment) {  
+			mReleaseFragment = new WeakReference<ReleaseFragment>(releaseFragment);  
+		}
 
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			switch (msg.what) {
-			case CommonDefine.ERR_NONE:
-				try {
-					JSONObject msgJson = new JSONObject((String)msg.obj);
-					int code = msgJson.getInt(JsonTag.CODE);
-					if (code == CommonDefine.ERR_SERVER_NONE) {
-						if (msgJson.has(JsonTag.DATA)) {
-							handleNomal(msgJson.getString(JsonTag.DATA));
-						} else {
-							handleNomal(msgJson.getString(JsonTag.MSG));
+			ReleaseFragment relReleaseFragment = mReleaseFragment.get();
+			if (relReleaseFragment != null) {
+				switch (msg.what) {
+				case CommonDefine.ERR_NONE:
+					try {
+						JSONObject msgJson = new JSONObject((String)msg.obj);
+						int code = msgJson.getInt(JsonTag.CODE);
+						if (code == CommonDefine.ERR_SERVER_NONE) {
+							if (msgJson.has(JsonTag.DATA)) {
+								relReleaseFragment.handleNomal(msgJson.getString(JsonTag.DATA));
+							} else {
+								relReleaseFragment.handleNomal(msgJson.getString(JsonTag.MSG));
+							}
+						} else if (code == CommonDefine.ERR_SERVER) {
+							relReleaseFragment.handleServerErr(msgJson.getString(JsonTag.MSG));
 						}
-					} else if (code == CommonDefine.ERR_SERVER) {
-						handleServerErr(msgJson.getString(JsonTag.MSG));
+					} catch (JSONException e) {
+						e.printStackTrace();
 					}
-				} catch (JSONException e) {
-					e.printStackTrace();
+					break;
+				case CommonDefine.ERR_NET:
+					relReleaseFragment.handleNetErr(relReleaseFragment.getString(R.string.err_net));
+					break;
 				}
-				break;
-			case CommonDefine.ERR_NET:
-				handleNetErr(getString(R.string.err_net));
-				break;
 			}
 		}
-	};
+	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		mHandler = new MyHandler(this);
+		
 		View releaseView = inflater.inflate(R.layout.release, null);
 		mStart = (EditText)releaseView.findViewById(R.id.start);
 		mEnd = (EditText)releaseView.findViewById(R.id.end);
@@ -90,13 +105,13 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 			mTip.setText(R.string.err_no_goods);
 			return;
 		}
-		
+
 		String phone = mPhone.getText().toString();
 		if (phone.equals("")) {
 			mTip.setText(R.string.err_no_phone);
 			return;
 		}
-		
+
 		mApplication.doInThread(new Release(start, end, goods, phone));
 	}
 
@@ -125,7 +140,7 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 			httpHandler.releaseOrder(mStart, mEnd, mGoods, mPhone, mNickName, mQq, mUploadCellPhone);
 		}
 	}
-	
+
 	public void handleNetErr(String err) {
 
 	}

@@ -10,11 +10,11 @@ import android.app.Application;
 public class TYTApplication extends Application {
 	private ExecutorService mThreadPool;
 	private PersonInfo mPersonInfo;
-	
+
 	public TYTApplication() {
-		mThreadPool = Executors.newFixedThreadPool(3);
+		mThreadPool = Executors.newFixedThreadPool(CommonDefine.NUMBER_FOR_BACKGROUND_THREAD);
 	}
-	
+
 	public void doInThread(Runnable task) {
 		mThreadPool.submit(task);
 	}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">特运通手机助手</string>
+    <string name="app_name">特运通</string>
     <string name="action_settings">设置</string>
     <string name="account">手机号</string>
     <string name="password">密  码</string>
@@ -28,6 +28,7 @@
     <string name="err_verifycode">验证码错误</string>
     <string name="err_password_no_same">密码与重复密码不相同</string>
     <string name="err_net">网络错误，请检查网络稍后再试</string>
+    <string name="err_server">服务器错误，请稍后再试</string>
     <string name="err_login_phone_not_exit">手机号不存在（请注册）</string>
     <string name="err_login_password_err">密码错误</string>
     <string name="err_login_account_not_for_this_pc">帐号与电脑不匹配</string>

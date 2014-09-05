@@ -117,22 +117,6 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 	}
 	
 	@Override
-	protected void onResume() {
-		super.onResume();
-		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
-		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_START_REFRESH);
-		startService(serviceIntent);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
-		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_STOP_REFRESH);
-		startService(serviceIntent);
-	}
-
-	@Override
 	public void handleNetErr(String err) {
 
 	}

@@ -3,8 +3,6 @@ package com.tyt.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.tyt.common.JsonTag;
 
 public class PersonInfo {

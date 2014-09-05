@@ -15,11 +15,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +36,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	private SharedPreferences mSharedPreferences;
 	private boolean mIsSavePassword = true;
 	private boolean mIsAutoLogin = true;
+	private boolean mIsLoginSuc = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +51,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		mIsSaveCheck.setOnClickListener(this);
 		mIsAutoLoginCheck = (TextView)findViewById(R.id.is_auto_login);
 		mIsAutoLoginCheck.setOnClickListener(this);
-		
+
 		mLogin = (Button)findViewById(R.id.login);
 		mLogin.setOnClickListener(this);
 		mRegister = (Button)findViewById(R.id.register);
@@ -73,14 +70,14 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		} else {
 			setLeftDrawable(mIsSaveCheck, R.drawable.select_no);
 		}
-		
+
 		mIsAutoLogin = mSharedPreferences.getBoolean(CommonDefine.IS_AUTO_LOGIN, true);
 		if (mIsAutoLogin) {
 			setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_yes);
 		} else {
 			setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_no);
 		}
-		
+
 		setTitle(getString(R.string.login));
 	}
 
@@ -99,6 +96,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		int id = v.getId();
 		switch (id) {
 		case R.id.login:
+			mIsLoginSuc = false;
 			doInThread(new LoginRunnable());
 			break;
 		case R.id.register:
@@ -122,7 +120,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			} else {
 				setLeftDrawable(mIsAutoLoginCheck, R.drawable.select_yes);
 			}
-			
+
 			mIsAutoLogin = !mIsAutoLogin;
 			Editor editor1 = mSharedPreferences.edit();
 			editor1.putBoolean(CommonDefine.IS_AUTO_LOGIN, mIsAutoLogin);
@@ -132,7 +130,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			break;
 		}
 	}
-	
+
 	private void setLeftDrawable(TextView view, int drawableId) {
 		Drawable drawable = getResources().getDrawable(drawableId);
 		drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
@@ -157,6 +155,22 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 		}
 	}
 
+	class PersonDataInit implements Runnable {
+		String account;
+		String password;
+
+		public PersonDataInit(String account, String password) {
+			this.account = account;
+			this.password = password;
+		}
+
+		@Override
+		public void run() {
+			HttpManager httpHandler = HttpManager.getInstance(mHandler);
+			httpHandler.getPersonInfo(account, password);
+		}
+	}
+
 	@Override
 	public void handleNetErr(String err) {
 		mErrTip.setText(R.string.err_net);
@@ -164,32 +178,36 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 
 	@Override
 	public void handleNomal(String msg) {
-		boolean isSave = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, false);
-		String account = mAccountInput.getText().toString();
-		String password = mPasswordInput.getText().toString();
-		
-		Editor editor = mSharedPreferences.edit();
-		if (isSave) {
-			editor.putString(CommonDefine.ACCOUNT, account);
-			editor.putString(CommonDefine.PASSWORD, password);
-		}
-		try {
-			JSONObject response = new JSONObject(msg);
-			editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
-			editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		editor.commit();
+		if (!mIsLoginSuc) {
+			boolean isSave = mSharedPreferences.getBoolean(CommonDefine.IS_SAVE_ACCOUNT, false);
+			String account = mAccountInput.getText().toString();
+			String password = mPasswordInput.getText().toString();
 
-		Intent serviceIntent = new Intent(this, TytService.class);
-		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
-		serviceIntent.putExtra(CommonDefine.ACCOUNT, account);
-		serviceIntent.putExtra(CommonDefine.PASSWORD, password);
-		startService(serviceIntent);
+			Editor editor = mSharedPreferences.edit();
+			if (isSave) {
+				editor.putString(CommonDefine.ACCOUNT, account);
+				editor.putString(CommonDefine.PASSWORD, password);
+			}
+			try {
+				JSONObject response = new JSONObject(msg);
+				editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
+				editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			editor.commit();
+			
+			mIsLoginSuc = true;
+			
+			doInThread(new PersonDataInit(account, password));
+		} else {
+			Intent serviceIntent = new Intent(this, TytService.class);
+			serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
+			startService(serviceIntent);
 
-		Intent allIntent = new Intent(this, AllInfoActivity.class);
-		startActivity(allIntent);
+			Intent allIntent = new Intent(this, AllInfoActivity.class);
+			startActivity(allIntent);
+		}
 	}
 
 	@Override

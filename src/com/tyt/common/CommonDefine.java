@@ -6,6 +6,8 @@ import com.dxj.tyt.R;
 
 public class CommonDefine {
 	public static final boolean IS_DEBUG = true;
+	
+	public static final int NUMBER_FOR_BACKGROUND_THREAD = 6;
 
 	public static final String SETTING = "Setting";
 	public static final String SERVICE_TIME = "ServiceTime";
@@ -19,7 +21,6 @@ public class CommonDefine {
 	public static final String PASSWORD = "Password";
 	public static final String TICKET = "Ticket";
 	
-
 	private static final String URL_BASE_TEST = "http://182.92.186.31:8080/";
 	private static final String URL_BASE_REAL = "http://www.teyuntong.cn/";
 
@@ -61,7 +62,8 @@ public class CommonDefine {
 	}
 
 	public static final int ERR_NONE = 0;
-	public static final int ERR_NET = ERR_NONE + 1;
+	public static final int ERR_LOCATION_INIT_END = ERR_NONE + 1;
+	public static final int ERR_NET = ERR_LOCATION_INIT_END + 1;
 	public static final int ERR_NONE_VERIFYCODE_OK = ERR_NET + 1;
 	public static final int ERR_VERIFYCODE = ERR_NONE_VERIFYCODE_OK + 1;
 	public static final int TIME_VERIFYCODE = ERR_VERIFYCODE + 1;

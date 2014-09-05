@@ -1,11 +1,8 @@
 package com.tyt.view;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
-
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
@@ -26,7 +23,7 @@ import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
 import com.amap.api.services.route.WalkRouteResult;
 import com.dxj.tyt.R;
 
-public class MapActivity extends Activity implements OnRouteSearchListener, OnGeocodeSearchListener{
+public class MapActivity extends BaseActivity implements OnRouteSearchListener, OnGeocodeSearchListener{
 	public static final String START = "Start";
 	public static final String STOP = "Stop";
 
@@ -50,7 +47,6 @@ public class MapActivity extends Activity implements OnRouteSearchListener, OnGe
 		setContentView(R.layout.map);
 		mStrStart = getIntent().getStringExtra(START);
 		mStrStop = getIntent().getStringExtra(STOP);
-		Log.i("sssss", "strStart:" + mStrStart + " strStop:" + mStrStop);
 
 		mMapView = (MapView) findViewById(R.id.map);
 		mMapView.onCreate(savedInstanceState);// 必须要写
@@ -181,7 +177,6 @@ public class MapActivity extends Activity implements OnRouteSearchListener, OnGe
 					isSearchStart = false;
 				} else {
 					mStopPoint = address.getLatLonPoint();
-					Log.i("sssss", "startPoint:" + mStartPoint + " stopPoint:" + mStopPoint);
 					mRouteSearch = new RouteSearch(this);
 					mRouteSearch.setRouteSearchListener(this);
 					final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(mStartPoint, mStopPoint);

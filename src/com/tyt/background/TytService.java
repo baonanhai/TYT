@@ -1,5 +1,7 @@
 package com.tyt.background;
 
+import java.lang.ref.WeakReference;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,7 +15,6 @@ import android.util.Log;
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
 import com.tyt.common.TYTApplication;
-import com.tyt.data.LocationManager;
 import com.tyt.data.OrderManager;
 import com.tyt.data.PersonInfo;
 import com.tyt.net.HttpManager;
@@ -39,23 +40,33 @@ public class TytService extends Service {
 	private TYTApplication mApplication ;
 	private long mTime;
 
-	private Handler mHandler = new Handler() {
+	protected Handler mHandler;
+
+	private static class ServiceHandler extends Handler {  
+		private WeakReference<TytService> mService;
+
+		public ServiceHandler(TytService service) {  
+			mService = new WeakReference<TytService>(service);  
+		}
 
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			switch (msg.what) {
-			case CommonDefine.ERR_NET:
+			TytService relService = mService.get();
+			if (relService != null) {
+				switch (msg.what) {
+				case CommonDefine.ERR_NET:
 
-				break;
-			case CommonDefine.ERR_NONE:
-				handleNoErrMsg(msg);
-				break;
-			default:
-				break;
+					break;
+				case CommonDefine.ERR_NONE:
+					relService.handleNoErrMsg(msg);
+					break;
+				default:
+					break;
+				}
 			}
 		}
-	};
+	}
 
 	private void handleNoErrMsg(Message msg) {
 		switch (msg.arg1) {
@@ -106,9 +117,11 @@ public class TytService extends Service {
 
 	@Override
 	public void onCreate() {
+		mHandler = new ServiceHandler(this);
+
 		mOrderManager = OrderManager.getInstance(getApplicationContext());
 		mApplication = (TYTApplication)getApplication();
-		
+
 		mTime = System.currentTimeMillis();
 	}
 
@@ -117,9 +130,6 @@ public class TytService extends Service {
 		if (intent != null) {
 			switch (intent.getIntExtra(COMMAND, COMMAND_INIT)) {
 			case COMMAND_INIT:
-				String account = intent.getStringExtra(CommonDefine.ACCOUNT);
-				String password = intent.getStringExtra(CommonDefine.PASSWORD);
-				mApplication.doInThread(new PersonDataInit(account, password));
 				mApplication.doInThread(new CheckTicket());
 				mApplication.doInThread(new ChangeHandler());
 				break;
@@ -152,22 +162,6 @@ public class TytService extends Service {
 		}
 	}
 
-	class PersonDataInit implements Runnable {
-		String account;
-		String password;
-
-		public PersonDataInit(String account, String password) {
-			this.account = account;
-			this.password = password;
-		}
-
-		@Override
-		public void run() {
-			HttpManager httpHandler = HttpManager.getInstance(mHandler);
-			httpHandler.getPersonInfo(account, password);
-		}
-	}
-
 	class CheckTicket implements Runnable {
 		@Override
 		public void run() {
@@ -182,7 +176,7 @@ public class TytService extends Service {
 			}
 		}
 	}
-	
+
 	class ChangeHandler implements Runnable {
 		@Override
 		public void run() {

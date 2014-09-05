@@ -1,6 +1,5 @@
 package com.tyt.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +14,7 @@ import com.tyt.common.CommonDefine;
 import com.tyt.data.OrderInfo;
 import com.tyt.data.OrderManager;
 
-public class DetailActivity extends Activity implements OnClickListener {
+public class DetailActivity extends BaseActivity implements OnClickListener {
 	public static final String ORDER_ID = "OrderId";
 	public static final String SEARCH_CONDITION = "SearchCondition";
 
@@ -67,7 +66,7 @@ public class DetailActivity extends Activity implements OnClickListener {
 		if (serveDays == 0) {
 			mKeep.setEnabled(false);
 		}
-		
+
 		if (orderManager.isKeep(mOrderInfo.getId())) {
 			mKeep.setText(getString(R.string.has_keep));
 			mKeep.setEnabled(false);
@@ -99,5 +98,4 @@ public class DetailActivity extends Activity implements OnClickListener {
 		}
 
 	}
-
 }
