@@ -23,6 +23,8 @@ import com.dxj.tyt.R;
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
+import com.tyt.common.TYTApplication;
+import com.tyt.data.PersonInfo;
 import com.tyt.net.HttpManager;
 
 public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickListener {
@@ -92,12 +94,30 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 
 	@Override
 	public void onClick(View v) {
-		mErrTip.setText("");
+		Editor editor = mSharedPreferences.edit();
 		int id = v.getId();
 		switch (id) {
 		case R.id.login:
 			mIsLoginSuc = false;
-			doInThread(new LoginRunnable());
+			String account = mAccountInput.getText().toString();
+			if (account.length() != 11) {
+				mErrTip.setText(R.string.err_phone_length);
+				mErrTip.setVisibility(View.VISIBLE);
+				return;
+			}
+			String password = mPasswordInput.getText().toString();
+			if (password.length() < 6 || password.length() > 8) {
+				mErrTip.setText(R.string.err_password_length);
+				mErrTip.setVisibility(View.VISIBLE);
+				return;
+			}
+			
+			editor.putBoolean(CommonDefine.IS_SAVE_ACCOUNT, mIsSavePassword);
+			editor.commit();
+			editor.putBoolean(CommonDefine.IS_AUTO_LOGIN, mIsAutoLogin);
+			editor.commit();
+			
+			doInThread(new LoginRunnable(account, password));
 			break;
 		case R.id.register:
 			Intent registerIntent = new Intent(this, RegisterActivity.class);
@@ -110,7 +130,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 				setLeftDrawable(mIsSaveCheck, R.drawable.select_yes);
 			}
 			mIsSavePassword = !mIsSavePassword;
-			Editor editor = mSharedPreferences.edit();
+			
 			editor.putBoolean(CommonDefine.IS_SAVE_ACCOUNT, mIsSavePassword);
 			editor.commit();
 			break;
@@ -122,9 +142,9 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			}
 
 			mIsAutoLogin = !mIsAutoLogin;
-			Editor editor1 = mSharedPreferences.edit();
-			editor1.putBoolean(CommonDefine.IS_AUTO_LOGIN, mIsAutoLogin);
-			editor1.commit();
+			
+			editor.putBoolean(CommonDefine.IS_AUTO_LOGIN, mIsAutoLogin);
+			editor.commit();
 			break;
 		default:
 			break;
@@ -138,20 +158,18 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	}
 
 	class LoginRunnable implements Runnable {
+		private String mAccount;
+		private String mPassword;
+		
+		public LoginRunnable(String account, String password) {
+			mAccount = account;
+			mPassword = password;
+		}
+
 		@Override
 		public void run() {
-			String account = mAccountInput.getText().toString();
-			if (account.length() != 11) {
-				mErrTip.setText(R.string.err_phone_length);
-				return;
-			}
-			String password = mPasswordInput.getText().toString();
-			if (password.length() < 6 || password.length() > 8) {
-				mErrTip.setText(R.string.err_password_length);
-				return;
-			}
 			HttpManager httpHandler = HttpManager.getInstance(mHandler);
-			httpHandler.login(account, password);
+			httpHandler.login(mAccount, mPassword);
 		}
 	}
 
@@ -174,6 +192,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	@Override
 	public void handleNetErr(String err) {
 		mErrTip.setText(R.string.err_net);
+		mErrTip.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -201,6 +220,8 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 			
 			doInThread(new PersonDataInit(account, password));
 		} else {
+			((TYTApplication)getApplication()).setPersonInfo(new PersonInfo(msg));
+			
 			Intent serviceIntent = new Intent(this, TytService.class);
 			serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
 			startService(serviceIntent);
@@ -213,6 +234,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 	@Override
 	public void handleServerErr(String err) {
 		mErrTip.setText(getString(CommonDefine.Login_err.get(Integer.parseInt(err))));
+		mErrTip.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -221,7 +243,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher ,OnClickL
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		mErrTip.setText("");
+		mErrTip.setVisibility(View.GONE);
 	}
 
 	@Override

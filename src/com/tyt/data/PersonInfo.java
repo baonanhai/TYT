@@ -27,8 +27,7 @@ public class PersonInfo {
 
 	public PersonInfo(String info) {
 		try {
-			JSONObject infoJson = new JSONObject(info);
-			JSONObject dataJson = infoJson.getJSONObject(JsonTag.DATA);
+			JSONObject dataJson = new JSONObject(info);
 			cellPhone = dataJson.getString(JsonTag.CELLPHONE);
 			qq = dataJson.getString(JsonTag.QQ_MINI);
 			trueName = dataJson.getString(JsonTag.TRUE_NAME);

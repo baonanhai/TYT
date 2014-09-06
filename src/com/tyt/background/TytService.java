@@ -10,13 +10,11 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 
 import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
 import com.tyt.common.TYTApplication;
 import com.tyt.data.OrderManager;
-import com.tyt.data.PersonInfo;
 import com.tyt.net.HttpManager;
 import com.tyt.view.BaseActivity;
 
@@ -39,6 +37,7 @@ public class TytService extends Service {
 	private int mMaxId = 1;
 	private TYTApplication mApplication ;
 	private long mTime;
+	private boolean mIsRun = true;
 
 	protected Handler mHandler;
 
@@ -94,13 +93,9 @@ public class TytService extends Service {
 				e.printStackTrace();
 			}
 			break;
-		case FLAG_GET_PERSON_INFO:
-			mApplication.setPersonInfo(new PersonInfo((String)msg.obj));
-			break;
 		case FLAG_GET_CHANGE_ORDER:
 			String changeOrders = (String)msg.obj;
-			Log.i("sssss", "Order change:" + changeOrders);
-			long mtime = mOrderManager.changeOrderInfo(changeOrders);
+			long mtime = mOrderManager.changedOrderInfo(changeOrders);
 			if (mtime != 1) {
 				mTime = mtime;
 			}
@@ -130,15 +125,19 @@ public class TytService extends Service {
 		if (intent != null) {
 			switch (intent.getIntExtra(COMMAND, COMMAND_INIT)) {
 			case COMMAND_INIT:
-				mApplication.doInThread(new CheckTicket());
+				mApplication.doInThread(new RefreshData());
 				mApplication.doInThread(new ChangeHandler());
+				mApplication.doInThread(new CheckTicket());
 				break;
 			case COMMAND_START_REFRESH:
 				mIsRefresh = true;
-				mApplication.doInThread(new RefreshData());
+				mIsCheckTicket = true;
+				mIsCheckChange = true;
 				break;
 			case COMMAND_STOP_REFRESH:
 				mIsRefresh = false;
+				mIsCheckTicket = false;
+				mIsCheckChange = false;
 				break;
 			default:
 				break;
@@ -150,9 +149,11 @@ public class TytService extends Service {
 	class RefreshData implements Runnable {
 		@Override
 		public void run() {
-			while (mIsRefresh) {
-				HttpManager httpHandler = HttpManager.getInstance(mHandler);
-				httpHandler.getAllInfo(mMaxId);
+			while (mIsRun) {
+				if (mIsRefresh) {
+					HttpManager httpHandler = HttpManager.getInstance(mHandler);
+					httpHandler.getAllInfo(mMaxId);
+				}
 				try {
 					Thread.sleep(CommonDefine.DELAY_FOR_GET_DELAY);
 				} catch (InterruptedException e) {
@@ -165,9 +166,11 @@ public class TytService extends Service {
 	class CheckTicket implements Runnable {
 		@Override
 		public void run() {
-			while (mIsCheckTicket) {
-				HttpManager httpHandler = HttpManager.getInstance(mHandler);
-				httpHandler.checkTicket(getApplicationContext());
+			while (mIsRun) {
+				if (mIsCheckTicket) {
+					HttpManager httpHandler = HttpManager.getInstance(mHandler);
+					httpHandler.checkTicket(getApplicationContext());
+				}
 				try {
 					Thread.sleep(CommonDefine.DELAY_FOR_CHECK_TICKET);
 				} catch (InterruptedException e) {
@@ -180,9 +183,11 @@ public class TytService extends Service {
 	class ChangeHandler implements Runnable {
 		@Override
 		public void run() {
-			while (mIsCheckChange) {
-				HttpManager httpHandler = HttpManager.getInstance(mHandler);
-				httpHandler.getAllChangeInfo(mTime);
+			while (mIsRun) {
+				if (mIsCheckChange) {
+					HttpManager httpHandler = HttpManager.getInstance(mHandler);
+					httpHandler.getAllChangeInfo(mTime);
+				}
 				try {
 					Thread.sleep(CommonDefine.DELAY_FOR_GET_DELAY);
 				} catch (InterruptedException e) {
@@ -195,8 +200,6 @@ public class TytService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mIsCheckTicket = false;
-		mIsRefresh = false;
-		mIsCheckChange = false;
+		mIsRun = false;
 	}
 }

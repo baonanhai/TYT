@@ -62,12 +62,12 @@ public class CommonDefine {
 	}
 
 	public static final int ERR_NONE = 0;
-	public static final int ERR_LOCATION_INIT_END = ERR_NONE + 1;
-	public static final int ERR_NET = ERR_LOCATION_INIT_END + 1;
+	public static final int ERR_NET = ERR_NONE + 1;
 	public static final int ERR_NONE_VERIFYCODE_OK = ERR_NET + 1;
 	public static final int ERR_VERIFYCODE = ERR_NONE_VERIFYCODE_OK + 1;
 	public static final int TIME_VERIFYCODE = ERR_VERIFYCODE + 1;
 	public static final int TIME_VERIFYCODE_END = TIME_VERIFYCODE + 1;
+	public static final int LOCATION_INIT_END = TIME_VERIFYCODE_END + 1;
 
 	public static final int ERR_SERVER_NONE = 200;
 	public static final int ERR_SERVER = 500;
@@ -78,4 +78,8 @@ public class CommonDefine {
 
 	public static final int REQUESTCODE_REGISTER = 1000;
 	public static final int RESULTCODE_REGISTER = REQUESTCODE_REGISTER + 1;
+	
+	public static final int ORDER_STATE_USEFULL = 1;
+	public static final int ORDER_STATE_NO_USEFULL = 0;
+	public static final int ORDER_STATE_COMPLETE = 4;
 }

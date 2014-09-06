@@ -43,7 +43,7 @@ public class BaseActivity extends Activity {
 			BaseActivity relActivity = mActivity.get();
 			if (relActivity != null) {
 				switch (msg.what) {
-				case CommonDefine.ERR_LOCATION_INIT_END:
+				case CommonDefine.LOCATION_INIT_END:
 					relActivity.handleNomal(null);
 					break;
 				case CommonDefine.ERR_NONE:
@@ -92,9 +92,9 @@ public class BaseActivity extends Activity {
 		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_START_REFRESH);
 		startService(serviceIntent);
 	}
-
+	
 	@Override
-	protected void onStop() {
+	protected void onPause() {
 		super.onStop();
 		Intent serviceIntent = new Intent(getApplicationContext(), TytService.class);
 		serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_STOP_REFRESH);

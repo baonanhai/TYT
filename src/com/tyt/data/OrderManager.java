@@ -89,12 +89,10 @@ public class OrderManager {
 						break;
 					}
 				}
+				
 				if (!hasIn) {
 					isDataChange = true;
 					mAllOrders.add(temp);
-					if (temp.getId() > maxId) {
-						maxId = temp.getId();
-					}
 				}
 			}
 
@@ -105,6 +103,10 @@ public class OrderManager {
 					result.add(orderInfo);
 				} else {
 					isDataChange = true;
+				}
+				
+				if (orderInfo.getId() > maxId) {
+					maxId = orderInfo.getId();
 				}
 			}
 
@@ -123,7 +125,7 @@ public class OrderManager {
 		return maxId;
 	}
 	
-	public long changeOrderInfo(String response) {
+	public long changedOrderInfo(String response) {
 		long mtime = 1;
 		try {
 			boolean isDataChange = false;
@@ -283,6 +285,28 @@ public class OrderManager {
 			}
 		}
 	}
+	
+	public List<OrderInfo> getAllReleaseOrder (String tel) {
+		List<OrderInfo> result = new ArrayList<>();
+		for (OrderInfo orderInfo : mAllOrders) {
+			if (orderInfo.getTel().equals(tel)) {
+				result.add(orderInfo);
+			} 
+		}
+		return result;
+	}
+	
+	public List<OrderInfo> getAllReleaseOrderToday (String tel, int orderState) {
+		List<OrderInfo> result = getAllReleaseOrder(tel);
+		List<OrderInfo> todayResult = new ArrayList<>();
+		long todayStart = getTimesmorning();
+		for (OrderInfo orderInfo : result) {
+			if (orderInfo.getCtime() > todayStart && orderInfo.getStatus() == orderState) {
+				todayResult.add(orderInfo);
+			}
+		}
+		return todayResult;
+	}
 
 	public void saveInfo(String file, Object object) {
 		FileOutputStream temp;
@@ -362,7 +386,7 @@ public class OrderManager {
 		return false;
 	}
 
-	public static long getTimesmorning(){ 
+	public static long getTimesmorning() { 
 		Calendar cal = Calendar.getInstance(); 
 		cal.set(Calendar.HOUR_OF_DAY, 0); 
 		cal.set(Calendar.SECOND, 0); 

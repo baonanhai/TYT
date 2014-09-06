@@ -19,6 +19,7 @@ import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
 import com.tyt.common.CommonUtil;
 import com.tyt.common.JsonTag;
+import com.tyt.common.TytLog;
 import com.tyt.common.UrlTag;
 
 public class HttpManager {
@@ -45,6 +46,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
 		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password));
 		String response = HttpOperator.doPost(CommonDefine.URL_LOGIN, params);
+		TytLog.i("登录：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -57,6 +59,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
 		params.add(new BasicNameValuePair(JsonTag.PASSWORD, password));
 		String response = HttpOperator.doPost(CommonDefine.URL_INFO_QUERY, params);
+		TytLog.i("获取个人信息：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -91,6 +94,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.UPLOAD_CELL_PHONE, uploadCellPhone));
 		
 		String response = HttpOperator.doPost(CommonDefine.URL_RELEASE, params);
+		TytLog.i("发布：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -109,6 +113,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.TRUE_NAME, name));
 		params.add(new BasicNameValuePair(JsonTag.ID_CARD, idcard));
 		String response = HttpOperator.doPost(CommonDefine.URL_REGISTER, params);
+		TytLog.i("注册：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -123,6 +128,7 @@ public class HttpManager {
 		List<NameValuePair> params = initRequest(ticket);
 		params.add(new BasicNameValuePair(JsonTag.CELLPHONE, account));
 		String response = HttpOperator.doPost(CommonDefine.URL_CHECK_TICKET, params);
+		TytLog.i("验证ticket：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -137,6 +143,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + maxId));
 		params.add(new BasicNameValuePair(JsonTag.SIZE, "" + 1000));
 		String response = HttpOperator.doPost(CommonDefine.URL_QUERY, params);
+		TytLog.i("获取订单：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -153,6 +160,7 @@ public class HttpManager {
 		params.add(new BasicNameValuePair(JsonTag.MTIME, "" + time));
 		params.add(new BasicNameValuePair(JsonTag.STATUS, "" + 0));
 		String response = HttpOperator.doPost(CommonDefine.URL_QUERY, params);
+		TytLog.i("获取变更订单：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
@@ -195,6 +203,7 @@ public class HttpManager {
 		urlSb.append(smsText);
 		String response;
 		response = HttpOperator.doGet(urlSb.toString());
+		TytLog.i("获取验证码：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {

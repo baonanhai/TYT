@@ -5,8 +5,9 @@
     <color name="select_item_color">#ff000000</color>
     <color name="red">#ffff0000</color>
     <color name="black">#ff000000</color>
+    <color name="gray">#ff646464</color>
     <color name="blue">#17b6ed</color>
-    <color name="write">#ffffffff</color>
+    <color name="white">#ffffffff</color>
     <color name="blackground">#f8f8f8</color>
 
 </resources>

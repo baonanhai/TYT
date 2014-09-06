@@ -1,14 +1,21 @@
 package com.tyt.view;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 
 import com.dxj.tyt.R;
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
+import com.tyt.common.JsonTag;
+import com.tyt.common.TYTApplication;
 import com.tyt.data.LocationManager;
+import com.tyt.data.PersonInfo;
 import com.tyt.net.HttpManager;
 
 public class SplashActivity extends BaseActivity {
@@ -29,9 +36,18 @@ public class SplashActivity extends BaseActivity {
 				super.run();
 				//初始化地址数据
 				LocationManager.getInstance(getApplicationContext()).initLocationInfo();
-				mHandler.obtainMessage(CommonDefine.ERR_LOCATION_INIT_END).sendToTarget();
+				mHandler.obtainMessage(CommonDefine.LOCATION_INIT_END).sendToTarget();
 			}
 		}.start();
+	}
+	
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onStop();
 	}
 
 	class LoginRunnable implements Runnable {
@@ -62,24 +78,37 @@ public class SplashActivity extends BaseActivity {
 
 	@Override
 	public void handleNomal(String msg) {
+		String account = mSharedPreferences.getString(CommonDefine.ACCOUNT, null);
+		String password = mSharedPreferences.getString(CommonDefine.PASSWORD, null);
 		boolean isAutoLogin = mSharedPreferences.getBoolean(CommonDefine.IS_AUTO_LOGIN, true);
-		if (isAutoLogin) {
+		if (isAutoLogin && account != null && password != null) {
 			if (!mIsLoginSuc) {
 				doInThread(new LoginRunnable());
 				mIsLoginSuc = true;
 			} else {
 				if (!mIsGetInfoSuc) {
-					String account = mSharedPreferences.getString(CommonDefine.ACCOUNT, null);
-					String password = mSharedPreferences.getString(CommonDefine.PASSWORD, null);
+					Editor editor = mSharedPreferences.edit();
+					try {
+						JSONObject response = new JSONObject(msg);
+						editor.putInt(CommonDefine.SERVE_DAYS, response.getInt(JsonTag.SERVE_DAYS));
+						editor.putString(CommonDefine.TICKET, response.getString(JsonTag.TICKET));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					editor.commit();
+					
 					doInThread(new PersonDataInit(account, password));
 					mIsGetInfoSuc = true;
 				} else {
+					((TYTApplication)getApplication()).setPersonInfo(new PersonInfo(msg));
+
 					Intent serviceIntent = new Intent(this, TytService.class);
 					serviceIntent.putExtra(TytService.COMMAND, TytService.COMMAND_INIT);
 					startService(serviceIntent);
 
 					Intent allIntent = new Intent(this, AllInfoActivity.class);
 					startActivity(allIntent);
+					finish();
 				}
 			}
 		} else {
@@ -87,5 +116,12 @@ public class SplashActivity extends BaseActivity {
 			startActivity(login);
 			finish();
 		}
+	}
+
+	@Override
+	public void handleServerErr(String err) {
+		Intent login = new Intent(SplashActivity.this, LoginActivity.class);
+		startActivity(login);
+		finish();
 	}
 }

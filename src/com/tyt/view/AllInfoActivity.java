@@ -9,6 +9,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -44,6 +45,11 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 		mFragmentManager = getFragmentManager(); 
 		
 		refreshView();
+	}
+	
+	protected void onResume() {
+		super.onResume();
+		Log.i("sssss", "AllInfoActivity COMMAND_START_REFRESH");
 	}
 
 	@Override
@@ -114,25 +120,6 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 			break;
 		}
 		transaction.commit();
-	}
-	
-	@Override
-	public void handleNetErr(String err) {
-
-	}
-
-	@Override
-	public void handleServerErr(String err) {
-
-	}
-
-	@Override
-	public void handleNomal(String msg) {
-	}
-
-	@Override
-	public void handleOtherMsg(Message msg) {
-
 	}
 
 	@Override
