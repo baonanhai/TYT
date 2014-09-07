@@ -142,7 +142,7 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 	}
 
 	public void handleNetErr(String err) {
-
+		Toast.makeText(mApplication, R.string.err_net, Toast.LENGTH_LONG).show();
 	}
 
 	public void handleServerErr(String err) {

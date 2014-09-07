@@ -29,11 +29,11 @@ import com.tyt.data.LocationInfo;
 import com.tyt.data.LocationManager;
 import com.tyt.data.OrderInfo;
 import com.tyt.data.OrderManager;
-import com.tyt.data.SearchObserver;
+import com.tyt.data.OrderChangeObserver;
 import com.tyt.data.SelectLocation;
 
 public class CarFragment extends Fragment implements OnItemSelectedListener, OnClickListener,
-SearchObserver, OnItemClickListener {
+OrderChangeObserver, OnItemClickListener {
 	private boolean mIsSearch = false;
 	private Spinner mStartPro;
 	private Spinner mStartCity;
@@ -273,11 +273,11 @@ SearchObserver, OnItemClickListener {
 								mSearchEndKey = new ArrayList<String>();
 								initSearchKey(mSearchEndKey, needSearchEndLocation);
 								showResult(mOrderManager.search(mSearchKey, mSearchEndKey));
-								mOrderManager.addSearchObserver(this);
+								mOrderManager.addOrderChangeObserver(this);
 							}
 						} else {
 							showResult(mOrderManager.search(mSearchKey, null));
-							mOrderManager.addSearchObserver(this);
+							mOrderManager.addOrderChangeObserver(this);
 						}
 					}
 				}
@@ -294,7 +294,7 @@ SearchObserver, OnItemClickListener {
 			} else {
 				mIsAutoRefresh = true;
 				mAutoRefresh.setText(getString(R.string.auto_refresh_open));
-				mOrderManager.addSearchObserver(this);
+				mOrderManager.addOrderChangeObserver(this);
 			}
 			break;
 		case R.id.search_change:

@@ -43,6 +43,7 @@ public class CommonDefine {
 	
 	public static final String URL_RELEASE = URL_BASE + "transport/save";
 	public static final String URL_INFO_QUERY = URL_BASE + "user/get";
+	public static final String URL_INFO_UPDATE = URL_BASE + "transport/update";
 
 	public static final int DELAY_FOR_GET_DELAY = 10 * 1000;
 	public static final int DELAY_FOR_CHECK_TICKET = 5 * 60 * 1000;

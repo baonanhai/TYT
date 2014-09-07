@@ -1,5 +1,5 @@
 package com.tyt.data;
 
-public interface SearchObserver {
+public interface OrderChangeObserver {
 	public void onDataChange();
 }

@@ -4,24 +4,31 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/releasing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/releasing"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
-
-    <ListView
-        android:id="@+id/releasing_list"
+    <LinearLayout
+        android:id="@+id/is_release_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp" >
-    </ListView>
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/releasing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/releasing"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <ListView
+            android:id="@+id/releasing_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+        </ListView>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/is_complete_view"
@@ -36,7 +43,6 @@
             android:id="@+id/is_complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:text="@string/is_complete"
             android:textColor="@color/black"
             android:textSize="16sp" />

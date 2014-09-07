@@ -99,8 +99,9 @@ public class LocationManager {
 			}
 		}
 
+		city = city.trim();
 		String cityTemp = city;
-		if (city.endsWith("市")) {
+		if (city.endsWith("市") || city.endsWith("区")) {
 			cityTemp = city.substring(0, city.length() - 1);
 			if (!hasIn(result, cityTemp)) {
 				result.add(cityTemp);

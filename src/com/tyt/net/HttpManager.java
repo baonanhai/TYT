@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
@@ -99,6 +100,22 @@ public class HttpManager {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
 			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
+		}
+	}
+	
+	public void updateOrder(int id, int status) {
+		List<NameValuePair> params = initRequest("" + id);
+		params.add(new BasicNameValuePair(JsonTag.ID, "" + id));
+		params.add(new BasicNameValuePair(JsonTag.STATUS, "" + status));
+		String response = HttpOperator.doPost(CommonDefine.URL_INFO_UPDATE, params);
+		TytLog.i("更新订单：" + response);
+		if (response == null) {
+			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
+		} else {
+			Message message = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			message.arg1 = id;
+			message.arg2 = status;
+			message.sendToTarget();
 		}
 	}
 

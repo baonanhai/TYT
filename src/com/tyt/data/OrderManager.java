@@ -26,7 +26,7 @@ import com.tyt.common.CommonDefine;
 import com.tyt.common.JsonTag;
 
 public class OrderManager {
-	private List<SearchObserver> mSearchObservers;
+	private List<OrderChangeObserver> mOrderChangeObservers;
 	private Context mContext;
 	private List<OrderInfo> mAllOrders;
 	private List<OrderInfo> mAllKeepOrders;
@@ -56,18 +56,18 @@ public class OrderManager {
 		return mOrderManager;
 	}
 
-	public void addSearchObserver(SearchObserver searchObserver) {
-		if (mSearchObservers == null) {
-			mSearchObservers = new ArrayList<SearchObserver>();
+	public void addOrderChangeObserver(OrderChangeObserver searchObserver) {
+		if (mOrderChangeObservers == null) {
+			mOrderChangeObservers = new ArrayList<OrderChangeObserver>();
 		}
-		if (!mSearchObservers.contains(searchObserver)) {
-			mSearchObservers.add(searchObserver);
+		if (!mOrderChangeObservers.contains(searchObserver)) {
+			mOrderChangeObservers.add(searchObserver);
 		}
 	}
 
-	public void removeSearchObserver(SearchObserver searchObserver) {
-		if (mSearchObservers != null && mSearchObservers.contains(searchObserver)) {
-			mSearchObservers.remove(searchObserver);
+	public void removeSearchObserver(OrderChangeObserver searchObserver) {
+		if (mOrderChangeObservers != null && mOrderChangeObservers.contains(searchObserver)) {
+			mOrderChangeObservers.remove(searchObserver);
 		}
 	}
 
@@ -113,16 +113,30 @@ public class OrderManager {
 			if (isDataChange) {
 				mAllOrders = result;
 				saveInfo(CommonDefine.ORDER_SAVE, mAllOrders);
-				if (mSearchObservers != null) {
-					for (SearchObserver searchObserver : mSearchObservers) {
-						searchObserver.onDataChange();
-					}
-				}
+				notifyObservers();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return maxId;
+	}
+	
+	public void updateOrderStatus(int id, int status) {
+		for (OrderInfo info : mAllOrders) {
+			if (info.getId() == id) {
+				info.setStatus(status);
+			} 
+		}
+		
+		notifyObservers();
+	}
+	
+	private void notifyObservers() {
+		if (mOrderChangeObservers != null) {
+			for (OrderChangeObserver searchObserver : mOrderChangeObservers) {
+				searchObserver.onDataChange();
+			}
+		}
 	}
 	
 	public long changedOrderInfo(String response) {
@@ -144,11 +158,7 @@ public class OrderManager {
 
 			if (isDataChange) {
 				saveInfo(CommonDefine.ORDER_SAVE, mAllOrders);
-				if (mSearchObservers != null) {
-					for (SearchObserver searchObserver : mSearchObservers) {
-						searchObserver.onDataChange();
-					}
-				}
+				notifyObservers();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -279,11 +289,7 @@ public class OrderManager {
 		sb.append(info.getTel());
 		mBlackOrder.add(sb.toString());
 		saveInfo(CommonDefine.BLACK_ORDER_SAVE, mBlackOrder);
-		if (mSearchObservers != null) {
-			for (SearchObserver searchObserver : mSearchObservers) {
-				searchObserver.onDataChange();
-			}
-		}
+		notifyObservers();
 	}
 	
 	public List<OrderInfo> getAllReleaseOrder (String tel) {
@@ -306,6 +312,19 @@ public class OrderManager {
 			}
 		}
 		return todayResult;
+	}
+	
+	public List<OrderInfo> getAllReleaseOrderWeek (String tel) {
+		List<OrderInfo> result = getAllReleaseOrder(tel);
+		List<OrderInfo> weekResult = new ArrayList<>();
+		long weekStart = getTimesWeekmorning();
+		long todayStart = getTimesmorning();
+		for (OrderInfo orderInfo : result) {
+			if (orderInfo.getCtime() > weekStart && orderInfo.getCtime() < todayStart) {
+				weekResult.add(orderInfo);
+			}
+		}
+		return weekResult;
 	}
 
 	public void saveInfo(String file, Object object) {

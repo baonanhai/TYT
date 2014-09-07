@@ -82,6 +82,8 @@
 	
 	<string name="release_succ">发布成功</string>
 	<string name="release_fail">发布失败</string>
+	<string name="operate_succ">操作成功</string>
+	<string name="operate_fail">操作失败</string>
 	
 	<string name="today">今日发布</string>
 	<string name="history">历史记录</string>
