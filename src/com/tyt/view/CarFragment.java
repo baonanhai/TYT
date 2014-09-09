@@ -290,7 +290,7 @@ OrderChangeObserver, OnItemClickListener {
 			if (mIsAutoRefresh) {
 				mIsAutoRefresh = false;
 				mAutoRefresh.setText(getString(R.string.auto_refresh_stop));
-				mOrderManager.removeSearchObserver(this);
+				mOrderManager.removeOrderChangeObserver(this);
 			} else {
 				mIsAutoRefresh = true;
 				mAutoRefresh.setText(getString(R.string.auto_refresh_open));
@@ -300,7 +300,7 @@ OrderChangeObserver, OnItemClickListener {
 		case R.id.search_change:
 			mIsSearch = false;
 			mIsAutoRefresh = true;
-			mOrderManager.removeSearchObserver(this);
+			mOrderManager.removeOrderChangeObserver(this);
 			mSearchHeader.removeAllViews();
 			initSearchConditionView();
 			break;
@@ -390,7 +390,7 @@ OrderChangeObserver, OnItemClickListener {
 				@Override
 				public void onClick(View v) {
 					int position = (int) v.getTag();
-					mOrderManager.addBlackOrder(mSearchResult.get(position));
+					mOrderManager.blackOrder(mSearchResult.get(position));
 				}
 			});
 			tag.isHide.setTag(position);

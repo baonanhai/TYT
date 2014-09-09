@@ -21,7 +21,9 @@ public class CommonDefine {
 	public static final String PASSWORD = "Password";
 	public static final String TICKET = "Ticket";
 	
-	private static final String URL_BASE_TEST = "http://182.92.186.31:8080/";
+	//private static final String URL_BASE_TEST = "http://182.92.186.31:8080/";
+	//private static final String URL_BASE_TEST = "http://tyt8.sinaapp.com/";
+	private static final String URL_BASE_TEST = "http://tyt7.vipsinaapp.com/";
 	private static final String URL_BASE_REAL = "http://www.teyuntong.cn/";
 
 	private static final String URL_BASE;

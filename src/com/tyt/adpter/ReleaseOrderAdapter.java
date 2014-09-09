@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +21,7 @@ import com.tyt.common.CommonDefine;
 import com.tyt.common.TYTApplication;
 import com.tyt.data.OrderInfo;
 import com.tyt.net.HttpManager;
+import com.tyt.view.ReleaseFragment;
 
 public class ReleaseOrderAdapter extends BaseAdapter implements OnClickListener {
 	private List<OrderInfo> mData;
@@ -115,7 +117,29 @@ public class ReleaseOrderAdapter extends BaseAdapter implements OnClickListener 
 		int state = CommonDefine.ORDER_STATE_COMPLETE;
 		if (order.getStatus() == CommonDefine.ORDER_STATE_COMPLETE) {
 			state = CommonDefine.ORDER_STATE_NO_USEFULL;
-		} 
-		mApplication.doInThread(new UpdateRunable(order.getId(), state));
+			mApplication.doInThread(new UpdateRunable(order.getId(), state));
+			StringBuilder sb = new StringBuilder();
+			String task = order.getTaskContent();
+			if (task.startsWith("[")) {
+				int restartId = Integer.parseInt(task.substring(1, task.indexOf(".") - 1));
+				String relTask = task.substring(task.indexOf(".") + 1);
+				sb.append("[");
+				sb.append(restartId + 1);
+				sb.append("]");
+				sb.append(".");
+				sb.append(relTask);
+			} else {
+				sb.append("[");
+				sb.append(1);
+				sb.append("]");
+				sb.append(".");
+				sb.append(task);
+			}
+			mApplication.doInThread(new ReleaseFragment.ReleaseRunnable(true, mHandler, mApplication, 
+					order.getStartPoint(), order.getDestPoint(), sb.toString(), order.getUploadCellPhone()));
+		} else {
+			mApplication.doInThread(new UpdateRunable(order.getId(), state));
+		}
+
 	}
 }

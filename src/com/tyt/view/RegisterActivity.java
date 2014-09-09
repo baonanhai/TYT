@@ -73,6 +73,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener, T
 		String phone = mAccountInput.getText().toString();
 		result.putExtra(FLAG_PHONE, phone);
 		setResult(CommonDefine.RESULTCODE_REGISTER, result);
+		finish();
 	}
 
 	@Override

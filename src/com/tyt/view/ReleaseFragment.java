@@ -78,7 +78,7 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mHandler = new MyHandler(this);
-		
+
 		View releaseView = inflater.inflate(R.layout.release, null);
 		mStart = (EditText)releaseView.findViewById(R.id.start);
 		mEnd = (EditText)releaseView.findViewById(R.id.end);
@@ -112,10 +112,11 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 			return;
 		}
 
-		mApplication.doInThread(new Release(start, end, goods, phone));
+		mApplication.doInThread(new ReleaseRunnable(false, mHandler, mApplication, start, end, goods, phone));
 	}
 
-	class Release implements Runnable {
+	public static class ReleaseRunnable implements Runnable {
+		private Handler mHandler;
 		private String mStart;
 		private String mEnd;
 		private String mGoods;
@@ -123,21 +124,24 @@ public class ReleaseFragment extends Fragment implements OnClickListener {
 		private String mUploadCellPhone;
 		private String mNickName;
 		private String mQq;
+		private boolean mIsReRelease;
 
-		public Release(String start, String end, String goods, String phone) {
+		public ReleaseRunnable(boolean isReRelease, Handler handler, TYTApplication application, String start, String end, String goods, String phone) {
+			mIsReRelease = isReRelease;
+			mHandler = handler;
 			mStart = start;
 			mEnd = end;
 			mGoods = goods;
 			mPhone = phone;
-			mNickName = mApplication.getPersonInfo().nickname;
-			mQq = mApplication.getPersonInfo().qq;
-			mUploadCellPhone = mApplication.getPersonInfo().cellPhone;
+			mNickName = application.getPersonInfo().nickname;
+			mQq = application.getPersonInfo().qq;
+			mUploadCellPhone = application.getPersonInfo().cellPhone;
 		}
 
 		@Override
 		public void run() {
 			HttpManager httpHandler = HttpManager.getInstance(mHandler);
-			httpHandler.releaseOrder(mStart, mEnd, mGoods, mPhone, mNickName, mQq, mUploadCellPhone);
+			httpHandler.releaseOrder(mIsReRelease, mStart, mEnd, mGoods, mPhone, mNickName, mQq, mUploadCellPhone);
 		}
 	}
 

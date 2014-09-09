@@ -11,6 +11,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +27,8 @@ import com.tyt.data.OrderManager;
 public class MyReleaseFragment extends Fragment implements OnClickListener {
 	private static final int STATE_TODAY = 0;
 	private static final int STATE_HISTORY = STATE_TODAY + 1;
+
+	public static final int FLAG_RELEASE = -1;
 
 	private TextView mBtnToday;
 	private TextView mBtnHistory;
@@ -56,8 +59,14 @@ public class MyReleaseFragment extends Fragment implements OnClickListener {
 						int code = msgJson.getInt(JsonTag.CODE);
 						if (code == CommonDefine.ERR_SERVER_NONE) {
 							int id = msg.arg1;
-							int status = msg.arg2;
-							relReleaseFragment.mOrderManager.updateOrderStatus(id, status);
+							if (id != FLAG_RELEASE) {
+								int status = msg.arg2;
+								Log.i("sssss", "更新订单状态");
+								relReleaseFragment.mOrderManager.updateOrderStatus(id, status);
+							} else {
+								Log.i("sssss", "重新发布已完成");
+								Toast.makeText(relReleaseFragment.getActivity(), R.string.operate_succ, Toast.LENGTH_LONG).show();
+							}
 						} else if (code == CommonDefine.ERR_SERVER) {
 							relReleaseFragment.handleServerErr(msgJson.getString(JsonTag.MSG));
 						}
@@ -142,10 +151,6 @@ public class MyReleaseFragment extends Fragment implements OnClickListener {
 
 	public void handleServerErr(String err) {
 		Toast.makeText(this.getActivity(), R.string.operate_fail, Toast.LENGTH_LONG).show();
-	}
-
-	public void handleNomal(String msg, int id, int status) {
-
 	}
 
 	@Override

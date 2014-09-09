@@ -5,25 +5,51 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.tyt.common.JsonTag;
 
+@DatabaseTable
 public class OrderInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private String pubTime;
-	private String	pubQQ;
-	private int status;
-	private String tel;
-	private String mtime;
-	private String resend;
-	private String uploadCellPhone;
-	private String taskContent;
-	private long ctime;
+	@DatabaseField(id = true)
 	private int id;
+	@DatabaseField
+	private String pubTime;
+	@DatabaseField
+	private String	pubQQ;
+	@DatabaseField
+	private int status;
+	@DatabaseField
+	private String tel;
+	@DatabaseField
+	private long mtime;
+	@DatabaseField
+	private String resend;
+	@DatabaseField
+	private String uploadCellPhone;
+	@DatabaseField
+	private String taskContent;
+	@DatabaseField
+	private long ctime;
+	@DatabaseField
 	private String source;
+	@DatabaseField
 	private String nickName;
+	@DatabaseField
 	private String destPoint;
+	@DatabaseField
 	private String startPoint;
+	@DatabaseField
 	private long mKeepTime;
+	@DatabaseField
+	private boolean mIsKeep = false;
+	@DatabaseField
+	private boolean mIsBlack = false;
+
+	public OrderInfo() {
+		super();
+	}
 
 	public OrderInfo(JSONObject order) {
 		try {
@@ -31,7 +57,7 @@ public class OrderInfo implements Serializable{
 			pubQQ = order.getString(JsonTag.PUB_QQ);
 			status = order.getInt(JsonTag.STATUS);
 			tel =  order.getString(JsonTag.TEL);
-			mtime =  order.getString(JsonTag.TIME);
+			mtime =  order.getLong(JsonTag.TIME);
 			resend =  order.getString(JsonTag.RESEND);
 			taskContent =  order.getString(JsonTag.TASK_CONTENT);
 			ctime =  order.getLong(JsonTag.CTIME);
@@ -42,18 +68,34 @@ public class OrderInfo implements Serializable{
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			destPoint =  order.getString(JsonTag.DESTPOINT);
 		} catch (JSONException e) {
 			//
 		}
-		
+
 		try {
 			uploadCellPhone =  order.getString(JsonTag.UPLOAD_CELL_PHONE);
 		} catch (JSONException e) {
 			//
 		}
+	}
+	
+	public boolean isBlack() {
+		return mIsBlack;
+	}
+
+	public void setIsBlack(boolean isBlack) {
+		mIsBlack = isBlack;
+	}
+	
+	public boolean isKeep() {
+		return mIsKeep;
+	}
+
+	public void setIsKeep(boolean isKeep) {
+		mIsKeep = isKeep;
 	}
 
 	public String getPubTime() {
@@ -67,7 +109,7 @@ public class OrderInfo implements Serializable{
 	public int getStatus() {
 		return status;
 	}
-	
+
 	public void setStatus(int status) {
 		this.status = status;
 	}
@@ -76,7 +118,7 @@ public class OrderInfo implements Serializable{
 		return tel;
 	}
 
-	public String getMtime() {
+	public long getMtime() {
 		return mtime;
 	}
 
@@ -115,7 +157,7 @@ public class OrderInfo implements Serializable{
 	public String getStartPoint() {
 		return startPoint;
 	}
-	
+
 	public long getKeepTime() {
 		return mKeepTime;
 	}

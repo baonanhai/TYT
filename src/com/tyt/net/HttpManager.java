@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.tyt.background.TytService;
 import com.tyt.common.CommonDefine;
@@ -22,6 +21,7 @@ import com.tyt.common.CommonUtil;
 import com.tyt.common.JsonTag;
 import com.tyt.common.TytLog;
 import com.tyt.common.UrlTag;
+import com.tyt.view.MyReleaseFragment;
 
 public class HttpManager {
 	private static HttpManager mHttpHandler;
@@ -70,39 +70,45 @@ public class HttpManager {
 		}
 	}
 
-	public void releaseOrder(String start, String end, String goods, String phone, String nickName, String qq, String uploadCellPhone) {
+	public void releaseOrder(boolean isReRelease, String start, String end, String goods, String phone, String nickName, String qq, String uploadCellPhone) {
 		List<NameValuePair> params = initRequest(qq);
 		params.add(new BasicNameValuePair(JsonTag.PUB_QQ, qq));
 		params.add(new BasicNameValuePair(JsonTag.NICK_NAME, nickName));
 		params.add(new BasicNameValuePair(JsonTag.STARTPOINT, start));
-		StringBuilder sb = new StringBuilder();
-		sb.append(start);
-		if (end != null && !end.equals("")) {
-			params.add(new BasicNameValuePair(JsonTag.DESTPOINT, end));
-			sb.append("---");
-			sb.append(end);
+		if (!isReRelease) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(start);
+			if (end != null && !end.equals("")) {
+				params.add(new BasicNameValuePair(JsonTag.DESTPOINT, end));
+				sb.append("---");
+				sb.append(end);
+			}
+			sb.append(" ");
+			sb.append(goods);
+			sb.append(" ");
+			sb.append(phone);
+			params.add(new BasicNameValuePair(JsonTag.TASK_CONTENT, sb.toString()));
+		} else {
+			params.add(new BasicNameValuePair(JsonTag.TASK_CONTENT, goods));
 		}
-		sb.append(" ");
-		sb.append(goods);
-		sb.append(" ");
-		sb.append(phone);
-		params.add(new BasicNameValuePair(JsonTag.TASK_CONTENT, sb.toString()));
 		params.add(new BasicNameValuePair(JsonTag.STATUS, "" + 1));
 		params.add(new BasicNameValuePair(JsonTag.SOURCE, "" + 0));
 		params.add(new BasicNameValuePair(JsonTag.TEL, phone));
 		DateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
 		params.add(new BasicNameValuePair(JsonTag.PUB_TIME, simpleDateFormat.format(new Date())));
 		params.add(new BasicNameValuePair(JsonTag.UPLOAD_CELL_PHONE, uploadCellPhone));
-		
+
 		String response = HttpOperator.doPost(CommonDefine.URL_RELEASE, params);
 		TytLog.i("发布：" + response);
 		if (response == null) {
 			mHandler.obtainMessage(CommonDefine.ERR_NET).sendToTarget();
 		} else {
-			mHandler.obtainMessage(CommonDefine.ERR_NONE, response).sendToTarget();
+			Message msg = mHandler.obtainMessage(CommonDefine.ERR_NONE, response);
+			msg.arg1 = MyReleaseFragment.FLAG_RELEASE;
+			msg.sendToTarget();
 		}
 	}
-	
+
 	public void updateOrder(int id, int status) {
 		List<NameValuePair> params = initRequest("" + id);
 		params.add(new BasicNameValuePair(JsonTag.ID, "" + id));
@@ -169,7 +175,7 @@ public class HttpManager {
 			message.sendToTarget();
 		}
 	}
-	
+
 	public void getAllChangeInfo(long time) {
 		List<NameValuePair> params = initRequest("" + 1);
 		params.add(new BasicNameValuePair(JsonTag.MAX_ID, "" + 1));

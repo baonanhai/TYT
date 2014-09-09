@@ -92,30 +92,39 @@ public class LocationManager {
 	public static void getAllUsefullLocation(ArrayList<String> result, String pro, String city, String county, String town) {
 		StringBuilder sb = new StringBuilder();
 		if (!pro.equals(city)) {
-			if (pro.endsWith("省")) {
-				sb.append(pro.substring(0, pro.length() - 1));
-			} else if (pro.endsWith("自治区")){
-				sb.append(pro.substring(0, pro.length() - 3));
+			if (city.length() > 2) {
+				if (pro.endsWith("省")) {
+					sb.append(pro.substring(0, pro.length() - 1));
+				} else if (pro.endsWith("自治区")){
+					sb.append(pro.substring(0, pro.length() - 3));
+				}
+			} else {
+				sb.append(pro);
 			}
 		}
 
 		city = city.trim();
 		String cityTemp = city;
-		if (city.endsWith("市") || city.endsWith("区")) {
-			cityTemp = city.substring(0, city.length() - 1);
-			if (!hasIn(result, cityTemp)) {
-				result.add(cityTemp);
+		if (city.length() > 2) {
+			if (city.endsWith("市") || city.endsWith("区")) {
+				cityTemp = city.substring(0, city.length() - 1);
 			}
-			sb.append(cityTemp);
 		}
 
+		if (!hasIn(result, cityTemp)) {
+			result.add(cityTemp);
+		}
+		sb.append(cityTemp);
+
 		if (county != null) {
-			String countyTemp = null;
-			if ((county.endsWith("自治县"))) {
-				countyTemp = county.substring(0, county.length() - 3);
-			} else if ((county.endsWith("县") || county.endsWith("区") 
-					|| county.endsWith("市"))) {
-				countyTemp = county.substring(0, county.length() - 1);
+			String countyTemp = county;
+			if (county.length() > 2) {
+				if ((county.endsWith("自治县"))) {
+					countyTemp = county.substring(0, county.length() - 3);
+				} else if ((county.endsWith("县") || county.endsWith("区") 
+						|| county.endsWith("市"))) {
+					countyTemp = county.substring(0, county.length() - 1);
+				}
 			}
 
 			if (!hasIn(result, countyTemp)) {

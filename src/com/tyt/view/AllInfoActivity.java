@@ -1,18 +1,16 @@
 package com.tyt.view;
 
-import com.dxj.tyt.R;
-import com.tyt.background.TytService;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import com.dxj.tyt.R;
+import com.tyt.background.TytService;
 
 public class AllInfoActivity extends BaseActivity implements OnClickListener {
 	private Button mSearch;
@@ -27,7 +25,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 	private Fragment mMyReleaseFragment;
 
 	private FragmentManager mFragmentManager;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,13 +41,8 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 		mMyRelease.setOnClickListener(this);
 
 		mFragmentManager = getFragmentManager(); 
-		
+
 		refreshView();
-	}
-	
-	protected void onResume() {
-		super.onResume();
-		Log.i("sssss", "AllInfoActivity COMMAND_START_REFRESH");
 	}
 
 	@Override
@@ -75,7 +68,7 @@ public class AllInfoActivity extends BaseActivity implements OnClickListener {
 		if (mMyReleaseFragment != null) {
 			transaction.hide(mMyReleaseFragment);
 		}
-		
+
 		mSearch.setEnabled(true);
 		mRelease.setEnabled(true);
 		mKeep.setEnabled(true);

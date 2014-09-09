@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.dxj.tyt.R;
 import com.tyt.background.TytService;
@@ -39,15 +40,6 @@ public class SplashActivity extends BaseActivity {
 				mHandler.obtainMessage(CommonDefine.LOCATION_INIT_END).sendToTarget();
 			}
 		}.start();
-	}
-	
-	protected void onResume() {
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onStop();
 	}
 
 	class LoginRunnable implements Runnable {
@@ -96,7 +88,7 @@ public class SplashActivity extends BaseActivity {
 						e.printStackTrace();
 					}
 					editor.commit();
-					
+
 					doInThread(new PersonDataInit(account, password));
 					mIsGetInfoSuc = true;
 				} else {
@@ -116,6 +108,14 @@ public class SplashActivity extends BaseActivity {
 			startActivity(login);
 			finish();
 		}
+	}
+
+	@Override
+	protected void handleNetErr(String err) {
+		Intent login = new Intent(SplashActivity.this, LoginActivity.class);
+		startActivity(login);
+		finish();
+		Toast.makeText(this, R.string.err_net, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
